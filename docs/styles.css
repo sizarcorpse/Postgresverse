@@ -1,0 +1,208 @@
+@font-face {
+  font-family: "Caskaydia Cove Nerd Font";
+  src: url("assets/CaskaydiaCoveNerdFont-Regular.ttf") format("truetype");
+  font-weight: 400;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Caskaydia Cove Nerd Font";
+  src: url("assets/CaskaydiaCoveNerdFont-SemiBold.ttf") format("truetype");
+  font-weight: 600;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Caskaydia Cove Nerd Font";
+  src: url("assets/CaskaydiaCoveNerdFont-Bold.ttf") format("truetype");
+  font-weight: 700;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Hack Nerd Font";
+  src: url("HackNerdFont-Regular.ttf") format("truetype");
+  font-weight: 400;
+  font-style: normal;
+}
+
+:root {
+  --background: 220 25% 16%;
+  --foreground: 20 6% 91%;
+  --title: 40 9% 87%;
+  --text: 20 6% 91%;
+  --link: 43 96% 56%;
+  --link-hover: 38 92% 50%;
+  --link-active: 32 95% 44%;
+  --link-visited: 26 90% 37%;
+  --code: 221 20% 25%;
+  --ring: 42 100% 71%;
+  --border: 355 22% 90%;
+  --border-radius: 0.5rem;
+}
+
+html {
+  font-size: 100%;
+  overflow-y: scroll;
+  -webkit-text-size-adjust: 100%;
+  -ms-text-size-adjust: 100%;
+}
+
+body {
+  color: hsl(var(--foreground));
+  background: hsl(var(--background));
+  font-family: "Caskaydia Cove Nerd Font", monospace;
+  font-size: 18px;
+  line-height: 1.5;
+}
+
+main {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  width: 100%;
+}
+
+#container {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: center;
+  width: 100%;
+  min-height: 100vh;
+  max-width: 1024px;
+}
+
+a {
+  color: hsl(var(--link));
+  text-decoration: none;
+}
+
+a:visited {
+  color: hsl(var(--link-visited));
+}
+
+a:hover {
+  color: hsl(var(--link-hover));
+}
+
+a:active {
+  color: hsl(var(--link-active));
+}
+
+a:focus {
+  outline: 2px solid hsl(var(--ring));
+  outline-offset: 2px;
+}
+
+*::selection {
+  background: hsl(var(--foreground));
+  color: hsl(var(--background));
+}
+
+a::selection {
+  background: hsl(var(--link));
+  color: hsl(var(--background));
+}
+
+p {
+  margin: 1rem 0;
+  color: hsl(var(--text));
+  font-weight: 400;
+  font-size: 18px;
+  line-height: 1.5;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  color: hsl(var(--title));
+  margin-top: 1.5rem;
+  margin-bottom: 1rem;
+  font-weight: 700;
+}
+
+h1 {
+  font-size: 3em;
+  line-height: 1.2;
+}
+
+h2 {
+  font-size: 2em;
+  line-height: 1.25;
+}
+
+h3 {
+  font-size: 1.5em;
+}
+
+h4 {
+  font-size: 1.2em;
+}
+
+h5 {
+  font-size: 1em;
+}
+
+h6 {
+  font-size: 0.9em;
+}
+
+.sourceCode {
+  background: hsl(var(--code));
+  border-radius: var(--border-radius);
+}
+.sourceCode pre {
+  padding: 1rem;
+}
+code.sourceCode.typescript {
+  white-space: break-spaces;
+}
+
+table {
+  margin-bottom: 2em;
+  border-bottom: 1px solid hsl(var(--border));
+  border-right: 1px solid hsl(var(--border));
+  border-spacing: 0;
+  border-collapse: collapse;
+}
+
+table th {
+  padding: 0.2em 1em;
+  background-color: hsl(var(--background));
+  border-top: 1px solid hsl(var(--border));
+  border-left: 1px solid hsl(var(--border));
+}
+
+table td {
+  padding: 0.2em 1em;
+  border-top: 1px solid hsl(var(--border));
+  border-left: 1px solid hsl(var(--border));
+  vertical-align: top;
+}
+
+@media all and (max-width: 768px) {
+  h1 {
+    font-size: 2.5em;
+  }
+  h2 {
+    font-size: 2em;
+  }
+  h3 {
+    font-size: 1.5em;
+  }
+  h4 {
+    font-size: 1.3em;
+  }
+  h5 {
+    font-size: 1.25em;
+  }
+  h6 {
+    font-size: 1em;
+  }
+}

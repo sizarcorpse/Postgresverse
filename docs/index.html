@@ -1,0 +1,1381 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="A comprehensive guide to
+PostgreSQL, covering topics such as commands, datatype, constraints,
+database operations, data definition, data manipulation, queries,
+schemas, database roles, and privileges." />
+    <meta name="keywords" content="PostgreSQL, Database, SQL" />
+    <meta name="author" content="Your Name" />
+    <title>PostgreSQL Guide</title>
+    <style>
+      code{white-space: pre-wrap;}
+      span.smallcaps{font-variant: small-caps;}
+      div.columns{display: flex; gap: min(4vw, 1.5em);}
+      div.column{flex: auto; overflow-x: auto;}
+      div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+      /* The extra [class] is a hack that increases specificity enough to
+         override a similar rule in reveal.js */
+      ul.task-list[class]{list-style: none;}
+      ul.task-list li input[type="checkbox"] {
+        font-size: inherit;
+        width: 0.8em;
+        margin: 0 0.8em 0.2em -1.6em;
+        vertical-align: middle;
+      }
+      .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+      /* CSS for syntax highlighting */
+      pre > code.sourceCode { white-space: pre; position: relative; }
+      pre > code.sourceCode > span { line-height: 1.25; }
+      pre > code.sourceCode > span:empty { height: 1.2em; }
+      .sourceCode { overflow: visible; }
+      code.sourceCode > span { color: inherit; text-decoration: inherit; }
+      div.sourceCode { margin: 1em 0; }
+      pre.sourceCode { margin: 0; }
+      @media screen {
+      div.sourceCode { overflow: auto; }
+      }
+      @media print {
+      pre > code.sourceCode { white-space: pre-wrap; }
+      pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+      }
+      pre.numberSource code
+        { counter-reset: source-line 0; }
+      pre.numberSource code > span
+        { position: relative; left: -4em; counter-increment: source-line; }
+      pre.numberSource code > span > a:first-child::before
+        { content: counter(source-line);
+          position: relative; left: -1em; text-align: right; vertical-align: baseline;
+          border: none; display: inline-block;
+          -webkit-touch-callout: none; -webkit-user-select: none;
+          -khtml-user-select: none; -moz-user-select: none;
+          -ms-user-select: none; user-select: none;
+          padding: 0 4px; width: 4em;
+          background-color: #232629;
+          color: #7a7c7d;
+        }
+      pre.numberSource { margin-left: 3em; border-left: 1px solid #7a7c7d;  padding-left: 4px; }
+      div.sourceCode
+        { color: #cfcfc2; background-color: #232629; }
+      @media screen {
+      pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+      }
+      code span { color: #cfcfc2; } /* Normal */
+      code span.al { color: #95da4c; background-color: #4d1f24; font-weight: bold; } /* Alert */
+      code span.an { color: #3f8058; } /* Annotation */
+      code span.at { color: #2980b9; } /* Attribute */
+      code span.bn { color: #f67400; } /* BaseN */
+      code span.bu { color: #7f8c8d; } /* BuiltIn */
+      code span.cf { color: #fdbc4b; font-weight: bold; } /* ControlFlow */
+      code span.ch { color: #3daee9; } /* Char */
+      code span.cn { color: #27aeae; font-weight: bold; } /* Constant */
+      code span.co { color: #7a7c7d; } /* Comment */
+      code span.cv { color: #7f8c8d; } /* CommentVar */
+      code span.do { color: #a43340; } /* Documentation */
+      code span.dt { color: #2980b9; } /* DataType */
+      code span.dv { color: #f67400; } /* DecVal */
+      code span.er { color: #da4453; text-decoration: underline; } /* Error */
+      code span.ex { color: #0099ff; font-weight: bold; } /* Extension */
+      code span.fl { color: #f67400; } /* Float */
+      code span.fu { color: #8e44ad; } /* Function */
+      code span.im { color: #27ae60; } /* Import */
+      code span.in { color: #c45b00; } /* Information */
+      code span.kw { color: #cfcfc2; font-weight: bold; } /* Keyword */
+      code span.op { color: #cfcfc2; } /* Operator */
+      code span.ot { color: #27ae60; } /* Other */
+      code span.pp { color: #27ae60; } /* Preprocessor */
+      code span.re { color: #2980b9; background-color: #153042; } /* RegionMarker */
+      code span.sc { color: #3daee9; } /* SpecialChar */
+      code span.ss { color: #da4453; } /* SpecialString */
+      code span.st { color: #f44f4f; } /* String */
+      code span.va { color: #27aeae; } /* Variable */
+      code span.vs { color: #da4453; } /* VerbatimString */
+      code span.wa { color: #da4453; } /* Warning */
+    </style>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <main>
+      <div id="container"><h1 id="postgresql">PostgreSQL</h1>
+<h2 id="table-of-contents">Table of contents</h2>
+<ul>
+<li><a href="#postgresql">PostgreSQL</a>
+<ul>
+<li><a href="#table-of-contents">Table of contents</a></li>
+<li><a href="#commands"><strong>COMMANDS</strong></a>
+<ul>
+<li><a href="#psql-commands"><code>psql</code> Commands</a></li>
+<li><a href="#postgresql-commands">PostgreSQL Commands</a></li>
+<li><a href="#useful-commands-line">Useful commands line</a>
+<ul>
+<li><a href="#use-pg_dumpall-to-backup-all-databases">Use
+<code>pg_dumpall</code> to backup all databases</a></li>
+<li><a href="#use-pg_dump-to-backup-a-database">Use <code>pg_dump</code>
+to backup a database</a></li>
+<li><a href="#restore-a-database-with-psql">Restore a database with
+<code>psql</code></a></li>
+<li><a href="#restore-a-database-with-pg_restore">Restore a database
+with <code>pg_restore</code></a></li>
+</ul></li>
+</ul></li>
+<li><a href="#datatype"><strong>DATATYPE</strong></a>
+<ul>
+<li><a href="#enumerated-types-enum">Enumerated Types
+<code>ENUM</code></a></li>
+<li><a href="#sequence"><code>SEQUENCE</code></a></li>
+</ul></li>
+<li><a href="#constraint"><strong>CONSTRAINT</strong></a>
+<ul>
+<li><a href="#syntax">Syntax</a></li>
+<li><a href="#check"><code>CHECK()</code></a></li>
+<li><a href="#not-null"><code>NOT NULL</code></a></li>
+<li><a href="#unique"><code>UNIQUE</code></a></li>
+<li><a href="#primary-key"><code>PRIMARY KEY()</code></a></li>
+<li><a href="#foreign-key"><code>FOREIGN KEY()</code></a></li>
+<li><a href="#default"><code>DEFAULT</code></a></li>
+<li><a href="#exclude"><code>EXCLUDE</code></a></li>
+<li><a href="#deferrable"><code>DEFERRABLE</code></a></li>
+<li><a
+href="#initially-deferred"><code>INITIALLY DEFERRED</code></a></li>
+</ul></li>
+<li><a href="#database"><strong>DATABASE</strong></a></li>
+<li><a href="#data-definition"><strong>DATA DEFINITION</strong></a>
+<ul>
+<li><a href="#modifying-tables">Modifying Tables</a></li>
+<li><a href="#modifying-columns">Modifying Columns</a></li>
+<li><a href="#relations">Relations</a></li>
+</ul></li>
+<li><a href="#data-manipulation"><strong>DATA MANIPULATION</strong></a>
+<ul>
+<li><a href="#inserting-data">Inserting Data</a></li>
+<li><a href="#updating-data">Updating Data</a></li>
+<li><a href="#deleting-data">Deleting Data</a></li>
+</ul></li>
+<li><a href="#queries"><strong>QUERIES</strong></a>
+<ul>
+<li><a href="#from-clause"><code>FROM</code> Clause</a></li>
+<li><a href="#join-tables"><code>JOIN</code> Tables</a>
+<ul>
+<li><a href="#inner-join--natural-inner-join"><code>INNER JOIN</code>
+&amp; <code>NATURAL INNER JOIN</code></a></li>
+<li><a href="#left-join"><code>LEFT JOIN</code></a></li>
+<li><a href="#right-join"><code>RIGHT JOIN</code></a></li>
+<li><a href="#full-join"><code>FULL JOIN</code></a></li>
+<li><a href="#conditional-join">Conditional <code>JOIN</code></a></li>
+</ul></li>
+<li><a href="#table--column-aliases"><code>TABLE</code> &amp;
+<code>COLUMN</code> Aliases</a></li>
+<li><a href="#where-clause"><code>WHERE</code> Clause</a></li>
+<li><a href="#group-by--having-clause"><code>GROUP BY</code> &amp;
+<code>HAVING</code> Clause</a>
+<ul>
+<li><a href="#group-by"><code>GROUP BY</code></a></li>
+<li><a href="#having"><code>HAVING</code></a></li>
+</ul></li>
+<li><a href="#grouping-sets-cube-and-rollup"><code>GROUPING SETS</code>,
+<code>CUBE</code>, and <code>ROLLUP</code></a></li>
+<li><a href="#order-by"><code>ORDER BY</code></a></li>
+<li><a href="#limit--offset"><code>LIMIT</code> &amp;
+<code>OFFSET</code></a></li>
+</ul></li>
+<li><a href="#schemas"><strong>SCHEMAS</strong></a>
+<ul>
+<li><a href="#search-path">Search Path</a></li>
+</ul></li>
+<li><a href="#database-roles"><strong>DATABASE ROLES</strong></a>
+<ul>
+<li><a href="#role-attributes">Role Attributes</a></li>
+<li><a href="#create-role--create-user"><code>CREATE ROLE</code> |
+<code>CREATE USER</code></a></li>
+<li><a href="#set-role-reset-role"><code>SET ROLE</code>,
+<code>RESET ROLE</code></a></li>
+<li><a href="#alter-role"><code>ALTER ROLE</code></a></li>
+<li><a href="#drop-role-reassign"><code>DROP ROLE</code>,
+<code>REASSIGN</code></a></li>
+</ul></li>
+<li><a href="#privileges-grant--revoke"><strong>PRIVILEGES</strong>
+<code>GRANT</code> &amp; <code>REVOKE</code></a>
+<ul>
+<li><a href="#privileges-attributes-and-abbreviations">Privileges
+Attributes and Abbreviations</a></li>
+<li><a href="#grant"><code>GRANT</code></a></li>
+<li><a href="#revoke"><code>REVOKE</code></a></li>
+<li><a
+href="#alter-default-privileges"><code>ALTER DEFAULT PRIVILEGES</code></a></li>
+<li><a href="#few-examples">Few Examples</a></li>
+</ul></li>
+</ul></li>
+</ul>
+<h2 id="commands"><strong>COMMANDS</strong></h2>
+<h3 id="psql-commands"><code>psql</code> Commands</h3>
+<p><code>psql</code> is a command-line interface for interacting with
+PostgreSQL databases. It allows you to execute SQL commands and view the
+results, create and modify database objects, and manage database users
+and permissions.</p>
+<table>
+<colgroup>
+<col style="width: 25%" />
+<col style="width: 41%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Commands</th>
+<th>Details</th>
+<th>Example</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>-U &lt;username&gt;</code></td>
+<td>Connecting as a specific use</td>
+<td><code>psql -U postgres</code></td>
+</tr>
+<tr class="even">
+<td><code>-d &lt;database_name&gt;</code></td>
+<td>Connecting to database</td>
+<td><code>psql -d animals</code></td>
+</tr>
+<tr class="odd">
+<td><code>-h &lt;host_name&gt;</code></td>
+<td>Connecting to a host</td>
+<td><code>psql -h localhost</code></td>
+</tr>
+<tr class="even">
+<td><code>-p &lt;port_name&gt;</code></td>
+<td>Connecting to a port</td>
+<td><code>psql -p 1222</code></td>
+</tr>
+<tr class="odd">
+<td><code>-f</code></td>
+<td>Execute commands from a file</td>
+<td><code>psql animals -f file.sql</code></td>
+</tr>
+<tr class="even">
+<td><code>-t</code>,<code>--tuples-only</code></td>
+<td>Print rows only</td>
+<td><code>psql -U -t</code></td>
+</tr>
+<tr class="odd">
+<td><code>-x</code>,<code>--expanded</code></td>
+<td>Turn on expanded table output</td>
+<td><code>psql -U -d -x</code></td>
+</tr>
+<tr class="even">
+<td><code>-c</code>,<code>--command</code></td>
+<td>Run only single command and exit</td>
+<td><code>psql -c -U -d</code></td>
+</tr>
+</tbody>
+</table>
+<h3 id="postgresql-commands">PostgreSQL Commands</h3>
+<table>
+<thead>
+<tr class="header">
+<th>Commands</th>
+<th>scope</th>
+<th>Details</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>\c &lt;database_name&gt;</code></td>
+<td>DATABASE</td>
+<td>Connect to new database</td>
+</tr>
+<tr class="even">
+<td><code>\conninfo</code></td>
+<td>DATABASE</td>
+<td>Display information</td>
+</tr>
+<tr class="odd">
+<td><code>\l</code></td>
+<td>DATABASE</td>
+<td>List all databases</td>
+</tr>
+<tr class="even">
+<td><code>\l+</code></td>
+<td>DATABASE</td>
+<td>List all databases with details</td>
+</tr>
+<tr class="odd">
+<td><code>\d &lt;table_name&gt;</code></td>
+<td>TABLE</td>
+<td>Describe table</td>
+</tr>
+<tr class="even">
+<td><code>\d+ &lt;table_name&gt;</code></td>
+<td>TABLE</td>
+<td>Describe table with details</td>
+</tr>
+<tr class="odd">
+<td><code>\dt</code></td>
+<td>TABLE</td>
+<td>List tables from current schema</td>
+</tr>
+<tr class="even">
+<td><code>\dT</code>, <code>\dT+</code></td>
+<td>TABLE</td>
+<td>Show all user-defined types</td>
+</tr>
+<tr class="odd">
+<td><code>\dt *.*</code></td>
+<td>TABLE</td>
+<td>List tables from all schemas</td>
+</tr>
+<tr class="even">
+<td><code>\dp</code></td>
+<td>TABLE</td>
+<td>List table access privileges</td>
+</tr>
+<tr class="odd">
+<td><code>\! clear</code></td>
+<td>GLOBAL</td>
+<td>Clear screen</td>
+</tr>
+<tr class="even">
+<td><code>\du</code>, <code>\du+</code></td>
+<td>DATABASE</td>
+<td>Clear screen</td>
+</tr>
+<tr class="odd">
+<td><code>\dn</code>, <code>\dn+</code></td>
+<td>DATABASE</td>
+<td>List of all schema</td>
+</tr>
+<tr class="even">
+<td><code>\dD+</code></td>
+<td>DOMAIN</td>
+<td>List of domains</td>
+</tr>
+<tr class="odd">
+<td><code>\db+</code></td>
+<td>TABLESPACE</td>
+<td>List of tablespaces</td>
+</tr>
+</tbody>
+</table>
+<h3 id="useful-commands-line">Useful commands line</h3>
+<h4 id="use-pg_dumpall-to-backup-all-databases">Use
+<code>pg_dumpall</code> to backup all databases</h4>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode sql"><code class="sourceCode sql"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>pg_dumpall <span class="op">-</span>U postgres <span class="op">&gt;</span> universe.sql</span></code></pre></div>
+<h4 id="use-pg_dump-to-backup-a-database">Use <code>pg_dump</code> to
+backup a database</h4>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode sql"><code class="sourceCode sql"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co">-- syntax --</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>pg_dump <span class="op">-</span>d <span class="op">&lt;</span>database_to_be_saved<span class="op">&gt;</span> <span class="op">-</span>f planets.sql</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>pg_dump <span class="op">-</span>d planets <span class="op">-</span>f planets.sql</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="co">-- `-a` Dump only the data, not the schema</span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="co">-- `-s` Dump only the schema, no data</span></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a><span class="co">-- `-c` Drop database before recreating</span></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a><span class="co">-- `-C` Create database before restoring</span></span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a><span class="co">-- `-t` Dump the named table(s) only</span></span></code></pre></div>
+<h4 id="restore-a-database-with-psql">Restore a database with
+<code>psql</code></h4>
+<div class="sourceCode" id="cb3"><pre
+class="sourceCode sql"><code class="sourceCode sql"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co">-- syntax --</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>psql <span class="op">-</span>U <span class="op">&lt;</span>username<span class="op">&gt;</span> <span class="op">&lt;</span>database_to_be_restored<span class="op">&gt;</span> <span class="op">&lt;</span> <span class="op">&lt;</span>backup_database<span class="op">&gt;</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>psql <span class="op">-</span>U postgres planets <span class="op">&lt;</span> planets.sql</span></code></pre></div>
+<h4 id="restore-a-database-with-pg_restore">Restore a database with
+<code>pg_restore</code></h4>
+<div class="sourceCode" id="cb4"><pre
+class="sourceCode sql"><code class="sourceCode sql"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co">-- syntax --</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>psql <span class="op">-</span>U <span class="op">&lt;</span>username<span class="op">&gt;</span> <span class="op">-</span>d <span class="op">&lt;</span>database_to_be_restored<span class="op">&gt;</span> <span class="op">&lt;</span>backup_database<span class="op">&gt;</span> <span class="op">-</span>c</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>psql <span class="op">-</span>U postgres planets planets.sql <span class="op">-</span>c</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a><span class="co">-- `-U` Specify a database user</span></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a><span class="co">-- `-c` Drop database before recreating</span></span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a><span class="co">-- `-C` Create database before restoring</span></span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a><span class="co">-- `-e` Exit if an error has encountered</span></span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a><span class="co">-- `-F` Format (c: custom, d: directory, t: tar, p: plain text sql(default)</span></span></code></pre></div>
+<h2 id="datatype"><strong>DATATYPE</strong></h2>
+<p>PostgreSQL offers a wide range of data types to choose from when
+designing your database tables. From basic types like
+<code>integers</code> and <code>characters</code> to more specialized
+types like <code>JSON</code> and <code>UUID</code>, PostgreSQL has a
+data type to suit almost any need.</p>
+<div class="sourceCode" id="cb5"><pre
+class="sourceCode sql"><code class="sourceCode sql"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co">-- syntax --</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="kw">ALTER</span> <span class="kw">TABLE</span> <span class="op">&lt;</span>table_name<span class="op">&gt;</span> <span class="kw">ADD</span> <span class="kw">COLUMN</span> <span class="op">&lt;</span>column_name<span class="op">&gt;</span> <span class="kw">DATA</span> <span class="kw">TYPE</span>;</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="co">-- example --</span></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a><span class="kw">ALTER</span> <span class="kw">TABLE</span> users <span class="kw">ADD</span> <span class="kw">COLUMN</span> username <span class="dt">VARCHAR</span>(<span class="dv">30</span>);</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a><span class="co">-- change data type --</span></span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a><span class="kw">ALTER</span> <span class="kw">TABLE</span> <span class="op">&lt;</span>table_name<span class="op">&gt;</span> <span class="kw">ALTER</span> <span class="kw">COLUMN</span> <span class="op">&lt;</span>column_name<span class="op">&gt;</span> <span class="kw">SET</span> <span class="kw">DATA</span> <span class="kw">TYPE</span> <span class="op">&lt;</span>new_data_type<span class="op">&gt;</span>;</span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a><span class="kw">ALTER</span> <span class="kw">TABLE</span> users <span class="kw">ADD</span> <span class="kw">COLUMN</span> username <span class="dt">VARCHAR</span>(<span class="dv">99</span>);</span></code></pre></div>
+<table>
+<colgroup>
+<col style="width: 16%" />
+<col style="width: 7%" />
+<col style="width: 52%" />
+<col style="width: 24%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Name</th>
+<th>typw</th>
+<th>Description</th>
+<th>syntax</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>SERIAL</code></td>
+<td>Numeric</td>
+<td>Auto-incrementing integer.</td>
+<td><code>... SERIAL</code></td>
+</tr>
+<tr class="even">
+<td><code>INTEGER</code>, <code>INT</code></td>
+<td>Numeric</td>
+<td>Stores integer values.</td>
+<td><code>...age INT</code></td>
+</tr>
+<tr class="odd">
+<td><code>SMALLINT</code>,</td>
+<td>Numeric</td>
+<td>Signed two-byte integer.</td>
+<td><code>| | `NUMERIC(p,s)`,  | Numeric | Stores numbers with a fixed `precision` and `scale`. | `...price NUMERIC(10,2)` | | `DECIMAL(p,s)`,  | Numeric | ''                                                   |</code></td>
+</tr>
+<tr class="even">
+<td><code>VARCHAR(n)</code></td>
+<td>char</td>
+<td>Variable-length character string</td>
+<td><code>...VARCHAR(255)</code></td>
+</tr>
+<tr class="odd">
+<td><code>text</code></td>
+<td>char</td>
+<td>Variable unlimited length</td>
+<td><code>| | `BOOLEAN` `BOOL` | bool    | Logical Boolean (true/false)                         | `... BOOL`               | | `DATE`           | date    | Calendar date (year, month, day)                     | `... DATE`               | | `TIMESTAMP`      | date    | Date and time (no time zone)                         |</code></td>
+</tr>
+<tr class="even">
+<td><code>uuid</code></td>
+<td>’’</td>
+<td>Universally unique identifier</td>
+<td><code>| | `json`           | ''      | Textual JSON data                                    |</code></td>
+</tr>
+</tbody>
+</table>
+<h3 id="enumerated-types-enum">Enumerated Types <code>ENUM</code></h3>
+<h3 id="sequence"><code>SEQUENCE</code></h3>
+<p><em>Create <code>SEQUENCE</code></em> <em>Alter
+<code>SEQUENCE</code></em> <em>Drop <code>SEQUENCE</code></em></p>
+<div class="sourceCode" id="cb6"><pre
+class="sourceCode sql"><code class="sourceCode sql"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co">-- syntax --</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="kw">CREATE</span> <span class="kw">TYPE</span> <span class="op">&lt;</span>enum_name<span class="op">&gt;</span> <span class="kw">AS</span> ENUM (<span class="op">&lt;</span>enum_values<span class="op">&gt;</span>);</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="co">-- examples --</span></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a><span class="kw">CREATE</span> <span class="kw">TYPE</span> user_status <span class="kw">AS</span> ENUM (<span class="st">&#39;Active&#39;</span>, <span class="st">&#39;Inactive&#39;</span>, <span class="st">&#39;Blocked&#39;</span>);</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a><span class="co">-- Rename Enum</span></span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a><span class="kw">ALTER</span> <span class="kw">TYPE</span> <span class="op">&lt;</span>old_enum_name<span class="op">&gt;</span> <span class="kw">RENAME</span> <span class="kw">TO</span> <span class="op">&lt;</span>new_enum_name<span class="op">&gt;</span></span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a><span class="kw">ALTER</span> <span class="kw">TYPE</span> user_status <span class="kw">RENAME</span> <span class="kw">TO</span> user_login_status</span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a><span class="co">-- View All Enum values</span></span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> <span class="op">*</span> <span class="kw">FROM</span> pg_enum;</span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a><span class="co">-- View All Enum values from specific type</span></span>
+<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> <span class="op">*</span> <span class="kw">FROM</span> pg_enum <span class="kw">WHERE</span> enumtypid <span class="op">=</span> <span class="st">&#39;&lt;enum_name&gt;&#39;</span>:<span class="ch">:regtype</span> ;</span>
+<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a><span class="co">-- Add Enum values</span></span>
+<span id="cb6-18"><a href="#cb6-18" aria-hidden="true" tabindex="-1"></a><span class="kw">ALTER</span> <span class="kw">TYPE</span> <span class="op">&lt;</span>enum_name<span class="op">&gt;</span> <span class="kw">ADD</span> <span class="fu">VALUE</span> <span class="st">&#39;&lt;value&gt;&#39;</span></span>
+<span id="cb6-19"><a href="#cb6-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-20"><a href="#cb6-20" aria-hidden="true" tabindex="-1"></a><span class="kw">ALTER</span> <span class="kw">TYPE</span> <span class="op">&lt;</span>enum_name<span class="op">&gt;</span> <span class="kw">ADD</span> <span class="fu">VALUE</span> <span class="st">&#39;&lt;value&gt;&#39;</span> <span class="kw">AFTER</span> <span class="st">&#39;&lt;stored_value&gt;&#39;</span></span>
+<span id="cb6-21"><a href="#cb6-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-22"><a href="#cb6-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-23"><a href="#cb6-23" aria-hidden="true" tabindex="-1"></a><span class="co">-- Rename enum values</span></span>
+<span id="cb6-24"><a href="#cb6-24" aria-hidden="true" tabindex="-1"></a><span class="kw">ALTER</span> <span class="kw">TYPE</span> <span class="op">&lt;</span>enum_name<span class="op">&gt;</span> <span class="kw">RENAME</span> <span class="fu">VALUE</span>  <span class="st">&#39;&lt;old_value&gt;&#39;</span> <span class="kw">TO</span> <span class="st">&#39;&lt;new_value&gt;&#39;</span></span>
+<span id="cb6-25"><a href="#cb6-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-26"><a href="#cb6-26" aria-hidden="true" tabindex="-1"></a><span class="kw">ALTER</span> <span class="kw">TYPE</span> user_status <span class="kw">RENAME</span> <span class="fu">VALUE</span> <span class="st">&#39;Inactive&#39;</span> <span class="kw">to</span> <span class="st">&#39;In-Active&#39;</span></span>
+<span id="cb6-27"><a href="#cb6-27" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-28"><a href="#cb6-28" aria-hidden="true" tabindex="-1"></a><span class="co">-- Drop Enum Type--</span></span>
+<span id="cb6-29"><a href="#cb6-29" aria-hidden="true" tabindex="-1"></a><span class="kw">DROP</span> <span class="kw">TYPE</span> <span class="op">&lt;</span>enum_name<span class="op">&gt;</span>;</span>
+<span id="cb6-30"><a href="#cb6-30" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-31"><a href="#cb6-31" aria-hidden="true" tabindex="-1"></a><span class="kw">DROP</span> <span class="kw">TYPE</span> user_status;</span>
+<span id="cb6-32"><a href="#cb6-32" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-33"><a href="#cb6-33" aria-hidden="true" tabindex="-1"></a><span class="co">-- Drop a Enum Value</span></span>
+<span id="cb6-34"><a href="#cb6-34" aria-hidden="true" tabindex="-1"></a><span class="kw">DELETE</span> <span class="kw">FROM</span> pg_enum <span class="kw">WHERE</span> enumtypid <span class="op">=</span> <span class="st">&#39;&lt;enum_name&gt;&#39;</span>:<span class="ch">:regtype</span> <span class="kw">AND</span> enumlabel <span class="op">=</span> <span class="st">&#39;&lt;enum_value_to_delete&gt;&#39;</span></span>
+<span id="cb6-35"><a href="#cb6-35" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-36"><a href="#cb6-36" aria-hidden="true" tabindex="-1"></a><span class="kw">DELETE</span> <span class="kw">FROM</span> pg_enum <span class="kw">WHERE</span> enumtypid <span class="op">=</span> <span class="st">&#39;user_status&#39;</span>:<span class="ch">:regtype</span> <span class="kw">AND</span> enumlabel <span class="op">=</span> <span class="st">&#39;In-Active&#39;</span></span></code></pre></div>
+<h2 id="constraint"><strong>CONSTRAINT</strong></h2>
+<h3 id="syntax">Syntax</h3>
+<div class="sourceCode" id="cb7"><pre
+class="sourceCode sql"><code class="sourceCode sql"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="co">-- Example with create table --</span></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="kw">CREATE</span> <span class="kw">TABLE</span> users (</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>   <span class="kw">id</span>   <span class="dt">INT</span> <span class="kw">PRIMARY</span> <span class="kw">KEY</span>,</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>   username <span class="dt">VARCHAR</span>(<span class="dv">33</span>) <span class="kw">UNIQUE</span> <span class="kw">NOT</span> <span class="kw">NULL</span>,</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>   <span class="kw">profile</span>  <span class="dt">INT</span> <span class="kw">REFERENCES</span> profiles(profile_id)</span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>   age <span class="kw">CHECK</span>(age <span class="op">&gt;=</span> <span class="dv">18</span>)</span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>   status <span class="dt">VARCHAR</span>(<span class="dv">55</span>) <span class="kw">DEFAULT</span> <span class="st">&#39;Active&#39;</span></span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>);</span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a><span class="co">-- With desire constraint name --</span></span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a><span class="kw">ALTER</span> <span class="kw">TABLE</span> <span class="op">&lt;</span>table_name<span class="op">&gt;</span> <span class="kw">add</span> <span class="kw">CONSTRAINT</span> <span class="op">&lt;</span>constraint_name<span class="op">&gt;</span> <span class="kw">CONSTRAINT</span>;</span>
+<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a><span class="kw">ALTER</span> <span class="kw">TABLE</span>  users <span class="kw">add</span> <span class="kw">CONSTRAINT</span> valid_age <span class="kw">CHECK</span>(age <span class="op">&gt;=</span> <span class="dv">18</span>);</span>
+<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a><span class="kw">ALTER</span> <span class="kw">TABLE</span>  articles <span class="kw">add</span> <span class="kw">CONSTRAINT</span> article_primary_key <span class="kw">PRIMARY</span> <span class="kw">KEY</span>(article_id, article_author);</span>
+<span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a><span class="co">-- Rename constraint name --</span></span>
+<span id="cb7-19"><a href="#cb7-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-20"><a href="#cb7-20" aria-hidden="true" tabindex="-1"></a><span class="kw">ALTER</span> <span class="kw">TABLE</span> <span class="op">&lt;</span>table_name<span class="op">&gt;</span> <span class="kw">RENAME</span> <span class="kw">CONSTRAINT</span> <span class="op">&lt;</span>old_constraint_name<span class="op">&gt;</span> <span class="kw">TO</span> <span class="op">&lt;</span>new_constraint_name<span class="op">&gt;</span>;</span>
+<span id="cb7-21"><a href="#cb7-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-22"><a href="#cb7-22" aria-hidden="true" tabindex="-1"></a><span class="kw">ALTER</span> <span class="kw">TABLE</span> articles <span class="kw">RENAME</span> <span class="kw">CONSTRAINT</span> author_title <span class="kw">to</span> compkey_author_title;</span>
+<span id="cb7-23"><a href="#cb7-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-24"><a href="#cb7-24" aria-hidden="true" tabindex="-1"></a><span class="co">-- drop --</span></span>
+<span id="cb7-25"><a href="#cb7-25" aria-hidden="true" tabindex="-1"></a><span class="kw">ALTER</span> <span class="kw">TABLE</span> <span class="op">&lt;</span>table_name<span class="op">&gt;</span> <span class="kw">DROP</span> <span class="kw">CONSTRAINT</span> <span class="op">&lt;</span>CONSTRAINT_NAME<span class="op">&gt;</span>;</span>
+<span id="cb7-26"><a href="#cb7-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-27"><a href="#cb7-27" aria-hidden="true" tabindex="-1"></a><span class="kw">ALTER</span> <span class="kw">TABLE</span> users <span class="kw">DROP</span> <span class="kw">CONSTRAINT</span> users_age_check;</span></code></pre></div>
+<h3 id="check"><code>CHECK()</code></h3>
+<p>A combination of a NOT NULL and UNIQUE constraint, used to identify
+each row in a table.</p>
+<div class="sourceCode" id="cb8"><pre
+class="sourceCode sql"><code class="sourceCode sql"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co">-- syntax --</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="kw">ALTER</span> <span class="kw">TABLE</span> <span class="op">&lt;</span>table_name<span class="op">&gt;</span> <span class="kw">ADD</span> <span class="kw">COLUMN</span> <span class="op">&lt;</span>column_name<span class="op">&gt;</span> <span class="op">&lt;</span>DATA_TYPE<span class="op">&gt;</span> <span class="op">&lt;</span><span class="kw">CONSTRAINT</span><span class="op">&gt;</span> <span class="kw">CHECK</span>( <span class="op">&lt;</span>column_name<span class="op">&gt;</span> <span class="op">&lt;</span>condition<span class="op">&gt;</span>) ;</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a><span class="co">-- example --</span></span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a><span class="kw">ALTER</span> <span class="kw">TABLE</span> users <span class="kw">ADD</span> <span class="kw">COLUMN</span> age <span class="dt">INT</span> <span class="kw">NOT</span> <span class="kw">NULL</span> <span class="kw">CHECK</span>( age <span class="op">&gt;=</span> <span class="dv">18</span> );</span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a><span class="kw">ALTER</span> <span class="kw">TABLE</span>  users <span class="kw">add</span> <span class="kw">CONSTRAINT</span> valid_age <span class="kw">CHECK</span>(age <span class="op">&gt;=</span> <span class="dv">18</span>)</span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a><span class="op">..</span>.<span class="kw">CHECK</span> (status <span class="kw">IN</span> (<span class="st">&#39;Active&#39;</span>, <span class="st">&#39;Inactive&#39;</span>))</span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a><span class="op">..</span>.<span class="kw">CHECK</span> (grade <span class="op">&gt;=</span> <span class="dv">0</span> <span class="kw">AND</span> grade <span class="op">&lt;=</span> <span class="dv">100</span>),</span>
+<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a><span class="op">..</span>.<span class="kw">CHECK</span> (date_of_birth <span class="op">&lt;</span> NOW()),</span>
+<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a><span class="co">-- drop --</span></span>
+<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a><span class="kw">ALTER</span> <span class="kw">TABLE</span> <span class="op">&lt;</span>table_name<span class="op">&gt;</span> <span class="kw">DROP</span> <span class="kw">CONSTRAINT</span> <span class="op">&lt;</span>CONSTRAINT_NAME<span class="op">&gt;</span>;</span>
+<span id="cb8-15"><a href="#cb8-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-16"><a href="#cb8-16" aria-hidden="true" tabindex="-1"></a><span class="kw">ALTER</span> <span class="kw">TABLE</span> users <span class="kw">DROP</span> <span class="kw">CONSTRAINT</span> users_age_check;</span></code></pre></div>
+<h3 id="not-null"><code>NOT NULL</code></h3>
+<p>Ensures that a column cannot contain a null value.</p>
+<div class="sourceCode" id="cb9"><pre
+class="sourceCode sql"><code class="sourceCode sql"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co">-- syntax --</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="kw">ALTER</span> <span class="kw">TABLE</span> <span class="op">&lt;</span>table_name<span class="op">&gt;</span> <span class="kw">ADD</span> <span class="kw">COLUMN</span> <span class="op">&lt;</span>column_name<span class="op">&gt;</span> <span class="op">&lt;</span>DATA_TYPE<span class="op">&gt;</span> <span class="kw">NOT</span> <span class="kw">NULL</span>;</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a><span class="co">-- examples --</span></span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a><span class="kw">ALTER</span> <span class="kw">TABLE</span> users <span class="kw">ADD</span> <span class="kw">COLUMN</span> username <span class="dt">VARCHAR</span>(<span class="dv">33</span>) <span class="kw">NOT</span> <span class="kw">NULL</span>;</span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a><span class="kw">ALTER</span> <span class="kw">TABLE</span> users <span class="kw">ALTER</span> <span class="kw">COLUMN</span> username <span class="kw">SET</span> <span class="kw">NOT</span> <span class="kw">NULL</span>;</span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a><span class="co">-- drop --</span></span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a><span class="kw">ALTER</span> <span class="kw">TABLE</span> <span class="op">&lt;</span>table_name<span class="op">&gt;</span> <span class="kw">ALTER</span> <span class="kw">COLUMN</span> <span class="op">&lt;</span>column_name<span class="op">&gt;</span> <span class="kw">DROP</span> <span class="kw">NOT</span> <span class="kw">NULL</span> ;</span>
+<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a><span class="kw">ALTER</span> <span class="kw">TABLE</span> users <span class="kw">ALTER</span> <span class="kw">COLUMN</span> username <span class="kw">DROP</span> <span class="kw">NOT</span> <span class="kw">NULL</span> ;</span></code></pre></div>
+<h3 id="unique"><code>UNIQUE</code></h3>
+<p>Ensures that the values in a column or set of columns are unique
+across all rows in the table.</p>
+<div class="sourceCode" id="cb10"><pre
+class="sourceCode sql"><code class="sourceCode sql"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="co">-- syntax --</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="kw">ALTER</span> <span class="kw">TABLE</span> <span class="op">&lt;</span>table_name<span class="op">&gt;</span> <span class="kw">ADD</span> <span class="kw">COLUMN</span> <span class="op">&lt;</span>column_name<span class="op">&gt;</span> <span class="op">&lt;</span>DATA_TYPE<span class="op">&gt;</span> <span class="kw">UNIQUE</span> ;</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a><span class="kw">ALTER</span> <span class="kw">TABLE</span> <span class="op">&lt;</span>table_name<span class="op">&gt;</span> <span class="kw">ADD</span> <span class="kw">UNIQUE</span>(<span class="op">&lt;</span>column_name<span class="op">&gt;</span>) ;</span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a><span class="co">-- examples --</span></span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a><span class="kw">ALTER</span> <span class="kw">TABLE</span> users <span class="kw">ADD</span> <span class="kw">COLUMN</span> username <span class="dt">VARCHAR</span>(<span class="dv">33</span>) <span class="kw">UNIQUE</span> ;</span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a><span class="kw">ALTER</span> <span class="kw">TABLE</span> users <span class="kw">ADD</span> <span class="kw">UNIQUE</span>(username) ;</span>
+<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a><span class="co">-- drop --</span></span>
+<span id="cb10-12"><a href="#cb10-12" aria-hidden="true" tabindex="-1"></a><span class="kw">ALTER</span> <span class="kw">TABLE</span> <span class="op">&lt;</span>table_name<span class="op">&gt;</span> <span class="kw">DROP</span> <span class="kw">CONSTRAINT</span> <span class="op">&lt;</span>CONSTRAINT_NAME<span class="op">&gt;</span>;</span>
+<span id="cb10-13"><a href="#cb10-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-14"><a href="#cb10-14" aria-hidden="true" tabindex="-1"></a><span class="kw">ALTER</span> <span class="kw">TABLE</span> users <span class="kw">DROP</span> <span class="kw">CONSTRAINT</span> users_username_key;</span></code></pre></div>
+<p>Add the <code>UNIQUE</code> constraint to the column you just
+added.</p>
+<h3 id="primary-key"><code>PRIMARY KEY()</code></h3>
+<p>A combination of a NOT NULL and UNIQUE constraint, used to identify
+each row in a table.</p>
+<div class="sourceCode" id="cb11"><pre
+class="sourceCode sql"><code class="sourceCode sql"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="co">-- syntax --</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="kw">ALTER</span> <span class="kw">TABLE</span> <span class="op">&lt;</span>table_name<span class="op">&gt;</span> <span class="kw">ADD</span> <span class="kw">PRIMARY</span> <span class="kw">KEY</span>(<span class="op">&lt;</span>column_name<span class="op">&gt;</span>);</span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a><span class="co">-- examples --</span></span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a><span class="kw">ALTER</span> <span class="kw">TABLE</span> users <span class="kw">ADD</span> <span class="kw">PRIMARY</span> <span class="kw">KEY</span>(username) ;</span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a><span class="co">-- drop --</span></span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a><span class="kw">ALTER</span> <span class="kw">TABLE</span> <span class="op">&lt;</span>table_name<span class="op">&gt;</span> <span class="kw">DROP</span> <span class="kw">CONSTRAINT</span> <span class="op">&lt;</span>CONSTRAINT_NAME<span class="op">&gt;</span>;</span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a><span class="kw">ALTER</span> <span class="kw">TABLE</span> users <span class="kw">DROP</span> <span class="kw">CONSTRAINT</span> users_pkey;</span></code></pre></div>
+<p><strong>Composite <code>PRIMARY KEY()</code></strong></p>
+<p>A composite primary key, also known as a compound primary key, is a
+primary key that consists of two or more columns. It is used to uniquely
+identify each row in a table when the primary key cannot be determined
+by a single column.</p>
+<div class="sourceCode" id="cb12"><pre
+class="sourceCode sql"><code class="sourceCode sql"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="co">-- syntax --</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="kw">ALTER</span> <span class="kw">TABLE</span> <span class="op">&lt;</span>table_name<span class="op">&gt;</span> <span class="kw">ADD</span> <span class="kw">PRIMARY</span> <span class="kw">KEY</span>(<span class="op">&lt;</span>column_name<span class="op">&gt;</span>,<span class="op">&lt;</span>column_name<span class="op">&gt;</span>,<span class="op">..</span>.) ;</span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a><span class="co">-- examples --</span></span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a><span class="kw">ALTER</span> <span class="kw">TABLE</span> articles <span class="kw">ADD</span> <span class="kw">PRIMARY</span> <span class="kw">KEY</span>(title, author) ;</span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a><span class="kw">ALTER</span> <span class="kw">TABLE</span> articles <span class="kw">ADD</span> <span class="kw">CONSTRAINT</span> compkey_title_author <span class="kw">PRIMARY</span> <span class="kw">KEY</span>(title, author)</span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a><span class="co">-- drop --</span></span>
+<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a><span class="kw">ALTER</span> <span class="kw">TABLE</span> <span class="op">&lt;</span>table_name<span class="op">&gt;</span> <span class="kw">DROP</span> <span class="kw">CONSTRAINT</span> <span class="op">&lt;</span>CONSTRAINT_NAME<span class="op">&gt;</span>;</span>
+<span id="cb12-11"><a href="#cb12-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-12"><a href="#cb12-12" aria-hidden="true" tabindex="-1"></a><span class="kw">ALTER</span> <span class="kw">TABLE</span> users <span class="kw">DROP</span> <span class="kw">CONSTRAINT</span> users_pkey;</span></code></pre></div>
+<h3 id="foreign-key"><code>FOREIGN KEY()</code></h3>
+<p>Ensures that the values in a column (or set of columns) match the
+values in a column (or set of columns) in another table.</p>
+<div class="sourceCode" id="cb13"><pre
+class="sourceCode sql"><code class="sourceCode sql"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="co">-- syntax --</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a><span class="kw">ALTER</span> <span class="kw">TABLE</span> <span class="op">&lt;</span>table_name<span class="op">&gt;</span> <span class="kw">ADD</span> <span class="kw">COLUMN</span> <span class="op">&lt;</span>column_name<span class="op">&gt;</span> <span class="op">&lt;</span><span class="kw">CONSTRAINT</span><span class="op">&gt;</span> <span class="kw">REFERENCES</span> <span class="op">&lt;</span>table_name<span class="op">&gt;</span>(<span class="op">&lt;</span>column_name<span class="op">&gt;</span>)</span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a><span class="kw">ALTER</span> <span class="kw">TABLE</span> <span class="op">&lt;</span>table_name<span class="op">&gt;</span> <span class="kw">ADD</span> <span class="kw">FOREIGN</span> <span class="kw">KEY</span> (<span class="op">&lt;</span>column_name<span class="op">&gt;</span>) <span class="kw">REFERENCES</span> <span class="op">&lt;</span>table_name<span class="op">&gt;</span>(<span class="op">&lt;</span>column_name<span class="op">&gt;</span>)</span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a><span class="co">-- examples --</span></span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a><span class="kw">ALTER</span> <span class="kw">TABLE</span> profiles <span class="kw">ADD</span> <span class="kw">COLUMN</span> user_id <span class="dt">INT</span> <span class="kw">REFERENCES</span> users(user_id)</span>
+<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a><span class="kw">ALTER</span> <span class="kw">TABLE</span> profiles <span class="kw">ADD</span> <span class="kw">FOREIGN</span> <span class="kw">KEY</span>(stat_id) <span class="kw">REFERENCES</span> <span class="kw">statistics</span>(stat_id)</span>
+<span id="cb13-10"><a href="#cb13-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-11"><a href="#cb13-11" aria-hidden="true" tabindex="-1"></a><span class="co">-- drop --</span></span>
+<span id="cb13-12"><a href="#cb13-12" aria-hidden="true" tabindex="-1"></a><span class="kw">ALTER</span> <span class="kw">TABLE</span> <span class="op">&lt;</span>table_name<span class="op">&gt;</span> <span class="kw">DROP</span> <span class="kw">CONSTRAINT</span> <span class="op">&lt;</span>CONSTRAINT_NAME<span class="op">&gt;</span>;</span>
+<span id="cb13-13"><a href="#cb13-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-14"><a href="#cb13-14" aria-hidden="true" tabindex="-1"></a><span class="kw">ALTER</span> <span class="kw">TABLE</span> users <span class="kw">DROP</span> <span class="kw">CONSTRAINT</span> profile_uname_fkey;</span></code></pre></div>
+<h3 id="default"><code>DEFAULT</code></h3>
+<p>is a constraint that specifies a default value for a column. If no
+value is specified for the column when a new row is inserted, the
+default value will be used.</p>
+<div class="sourceCode" id="cb14"><pre
+class="sourceCode sql"><code class="sourceCode sql"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="co">-- syntax --</span></span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a><span class="kw">ALTER</span> <span class="kw">TABLE</span> <span class="op">&lt;</span>table_name<span class="op">&gt;</span> <span class="kw">ALTER</span> <span class="kw">COLUMN</span> <span class="op">&lt;</span>column_name<span class="op">&gt;</span> <span class="kw">SET</span> <span class="kw">DEFAULT</span> <span class="op">&lt;</span><span class="fu">value</span><span class="op">&gt;</span> ;</span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a><span class="co">-- examples --</span></span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a><span class="kw">ALTER</span> <span class="kw">TABLE</span> users <span class="kw">ALTER</span> <span class="kw">COLUMN</span> name <span class="kw">SET</span> <span class="kw">DEFAULT</span> <span class="st">&#39;Anonymous&#39;</span> ;</span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a><span class="co">-- drop --</span></span>
+<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a><span class="kw">ALTER</span> <span class="kw">TABLE</span> profiles <span class="kw">ALTER</span> <span class="kw">COLUMN</span> name <span class="kw">DROP</span> <span class="kw">DEFAULT</span>;</span></code></pre></div>
+<h3 id="exclude"><code>EXCLUDE</code></h3>
+<p><em>not yet learn</em></p>
+<h3 id="deferrable"><code>DEFERRABLE</code></h3>
+<p><em>not yet learn</em></p>
+<h3 id="initially-deferred"><code>INITIALLY DEFERRED</code></h3>
+<p><em>not yet learn</em></p>
+<h2 id="database"><strong>DATABASE</strong></h2>
+<div class="sourceCode" id="cb15"><pre
+class="sourceCode sql"><code class="sourceCode sql"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="co">-- List of all databases</span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>\l</span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a><span class="co">-- Connect to a database.</span></span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>\c <span class="op">&lt;</span>database_name<span class="op">&gt;</span></span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a>\c users</span>
+<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a><span class="co">-- Show current database</span></span>
+<span id="cb15-10"><a href="#cb15-10" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> current_database();</span>
+<span id="cb15-11"><a href="#cb15-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-12"><a href="#cb15-12" aria-hidden="true" tabindex="-1"></a><span class="co">-- Create new database</span></span>
+<span id="cb15-13"><a href="#cb15-13" aria-hidden="true" tabindex="-1"></a><span class="kw">CREATE</span> <span class="kw">DATABASE</span> <span class="op">&lt;</span>database_name<span class="op">&gt;</span>;</span>
+<span id="cb15-14"><a href="#cb15-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-15"><a href="#cb15-15" aria-hidden="true" tabindex="-1"></a><span class="kw">CREATE</span> <span class="kw">DATABASE</span> users ;</span>
+<span id="cb15-16"><a href="#cb15-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-17"><a href="#cb15-17" aria-hidden="true" tabindex="-1"></a><span class="co">--- Rename a database</span></span>
+<span id="cb15-18"><a href="#cb15-18" aria-hidden="true" tabindex="-1"></a><span class="kw">ALTER</span> <span class="kw">DATABASE</span> <span class="op">&lt;</span>old_database_name<span class="op">&gt;</span> <span class="kw">RENAME</span> <span class="kw">TO</span> <span class="op">&lt;</span>new_database_name<span class="op">&gt;</span>;</span>
+<span id="cb15-19"><a href="#cb15-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-20"><a href="#cb15-20" aria-hidden="true" tabindex="-1"></a><span class="kw">ALTER</span> <span class="kw">DATABASE</span> <span class="fu">user</span> <span class="kw">RENAME</span> <span class="kw">TO</span> users;</span>
+<span id="cb15-21"><a href="#cb15-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-22"><a href="#cb15-22" aria-hidden="true" tabindex="-1"></a><span class="co">-- Drop database</span></span>
+<span id="cb15-23"><a href="#cb15-23" aria-hidden="true" tabindex="-1"></a><span class="kw">DROP</span> <span class="kw">DATABASE</span> <span class="op">&lt;</span>database_name<span class="op">&gt;</span>;</span>
+<span id="cb15-24"><a href="#cb15-24" aria-hidden="true" tabindex="-1"></a><span class="kw">DROP</span> <span class="kw">DATABASE</span> <span class="cf">IF</span> <span class="kw">EXISTS</span> <span class="op">&lt;</span>database_name<span class="op">&gt;</span>;</span>
+<span id="cb15-25"><a href="#cb15-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-26"><a href="#cb15-26" aria-hidden="true" tabindex="-1"></a><span class="kw">DROP</span> <span class="kw">DATABASE</span> users ;</span>
+<span id="cb15-27"><a href="#cb15-27" aria-hidden="true" tabindex="-1"></a><span class="kw">DROP</span> <span class="kw">DATABASE</span> <span class="cf">IF</span> <span class="kw">EXISTS</span> users;</span></code></pre></div>
+<h2 id="data-definition"><strong>DATA DEFINITION</strong></h2>
+<h3 id="modifying-tables">Modifying Tables</h3>
+<div class="sourceCode" id="cb16"><pre
+class="sourceCode sql"><code class="sourceCode sql"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="co">-- Display the tables.</span></span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>\d</span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>\d <span class="op">&lt;</span>table_name<span class="op">&gt;</span></span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a><span class="co">-- Create tables</span></span>
+<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a><span class="kw">CREATE</span> <span class="kw">TABLE</span> <span class="op">&lt;</span>table_name<span class="op">&gt;</span>();</span>
+<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a><span class="kw">CREATE</span> <span class="kw">TABLE</span> <span class="op">&lt;</span>table_name<span class="op">&gt;</span>(<span class="op">&lt;</span>column_name<span class="op">&gt;</span> DATATYPE <span class="kw">CONSTRAINT</span>, <span class="op">..</span>.);</span>
+<span id="cb16-8"><a href="#cb16-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-9"><a href="#cb16-9" aria-hidden="true" tabindex="-1"></a><span class="kw">CREATE</span> <span class="kw">TABLE</span> <span class="fu">user</span>(username <span class="dt">VARCHAR</span>(<span class="dv">30</span>) <span class="kw">UNIQUE</span> <span class="kw">PRIMARY</span> <span class="kw">KEY</span>,<span class="op">..</span>.);</span>
+<span id="cb16-10"><a href="#cb16-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-11"><a href="#cb16-11" aria-hidden="true" tabindex="-1"></a><span class="co">-- Rename Table</span></span>
+<span id="cb16-12"><a href="#cb16-12" aria-hidden="true" tabindex="-1"></a><span class="kw">ALTER</span> <span class="kw">TABLE</span> <span class="op">&lt;</span>table_name<span class="op">&gt;</span> <span class="kw">RENAME</span> <span class="kw">TO</span> <span class="op">&lt;</span>new_table_name<span class="op">&gt;</span> ;</span>
+<span id="cb16-13"><a href="#cb16-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-14"><a href="#cb16-14" aria-hidden="true" tabindex="-1"></a><span class="kw">ALTER</span> <span class="kw">TABLE</span> <span class="fu">user</span> <span class="kw">RENAME</span> <span class="kw">TO</span> users ;</span>
+<span id="cb16-15"><a href="#cb16-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-16"><a href="#cb16-16" aria-hidden="true" tabindex="-1"></a><span class="co">-- Drop Table</span></span>
+<span id="cb16-17"><a href="#cb16-17" aria-hidden="true" tabindex="-1"></a><span class="kw">DROP</span> <span class="kw">TABLE</span> <span class="op">&lt;</span>table_name<span class="op">&gt;</span>;</span>
+<span id="cb16-18"><a href="#cb16-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-19"><a href="#cb16-19" aria-hidden="true" tabindex="-1"></a><span class="kw">DROP</span> <span class="kw">TABLE</span> users;</span>
+<span id="cb16-20"><a href="#cb16-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-21"><a href="#cb16-21" aria-hidden="true" tabindex="-1"></a><span class="co">-- Constraint</span></span>
+<span id="cb16-22"><a href="#cb16-22" aria-hidden="true" tabindex="-1"></a><span class="kw">ALTER</span> <span class="kw">TABLE</span> users <span class="kw">ADD</span> <span class="kw">UNIQUE</span>(username);</span>
+<span id="cb16-23"><a href="#cb16-23" aria-hidden="true" tabindex="-1"></a><span class="kw">ALTER</span> <span class="kw">TABLE</span> users <span class="kw">ADD</span> <span class="kw">PRIMARY</span> <span class="kw">KEY</span>(username) ;</span>
+<span id="cb16-24"><a href="#cb16-24" aria-hidden="true" tabindex="-1"></a><span class="kw">ALTER</span> <span class="kw">TABLE</span> users <span class="kw">ADD</span> <span class="kw">CONSTRAINT</span> valid_age <span class="kw">CHECK</span>(age <span class="op">&gt;=</span> <span class="dv">18</span>) ;</span>
+<span id="cb16-25"><a href="#cb16-25" aria-hidden="true" tabindex="-1"></a><span class="kw">ALTER</span> <span class="kw">TABLE</span> profiles <span class="kw">ADD</span> <span class="kw">FOREIGN</span> <span class="kw">KEY</span>(stat_id) <span class="kw">REFERENCES</span> <span class="kw">statistics</span>(stat_id)</span>
+<span id="cb16-26"><a href="#cb16-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-27"><a href="#cb16-27" aria-hidden="true" tabindex="-1"></a><span class="kw">ALTER</span> <span class="kw">TABLE</span> <span class="op">&lt;</span>table_name<span class="op">&gt;</span> <span class="kw">DROP</span> <span class="kw">CONSTRAINT</span> <span class="op">&lt;</span>CONSTRAINT_NAME<span class="op">&gt;</span>;</span></code></pre></div>
+<h3 id="modifying-columns">Modifying Columns</h3>
+<div class="sourceCode" id="cb17"><pre
+class="sourceCode sql"><code class="sourceCode sql"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="co">--- Add columns</span></span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a><span class="kw">ALTER</span> <span class="kw">TABLE</span> <span class="op">&lt;</span>table_name<span class="op">&gt;</span> <span class="kw">ADD</span> <span class="kw">COLUMN</span> <span class="op">&lt;</span>column_name<span class="op">&gt;</span> DATATYPE <span class="kw">CONSTRAINT</span>;</span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a><span class="kw">ALTER</span> <span class="kw">TABLE</span> users <span class="kw">ADD</span> <span class="kw">COLUMN</span> username <span class="dt">VARCHAR</span>(<span class="dv">30</span>) <span class="kw">UNIQUE</span> <span class="kw">NOT</span> <span class="kw">NULL</span>;</span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a><span class="co">-- Rename column</span></span>
+<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a><span class="kw">ALTER</span> <span class="kw">TABLE</span> <span class="op">&lt;</span>table_name<span class="op">&gt;</span> <span class="kw">RENAME</span> <span class="kw">COLUMN</span> <span class="op">&lt;</span>old_column_name<span class="op">&gt;</span> <span class="kw">TO</span> <span class="op">&lt;</span>new_column_name<span class="op">&gt;</span>;</span>
+<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-9"><a href="#cb17-9" aria-hidden="true" tabindex="-1"></a><span class="kw">ALTER</span> <span class="kw">TABLE</span> persons <span class="kw">RENAME</span> <span class="kw">COLUMN</span> name <span class="kw">TO</span> username;</span>
+<span id="cb17-10"><a href="#cb17-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-11"><a href="#cb17-11" aria-hidden="true" tabindex="-1"></a><span class="co">-- Drop columns</span></span>
+<span id="cb17-12"><a href="#cb17-12" aria-hidden="true" tabindex="-1"></a><span class="kw">ALTER</span> <span class="kw">TABLE</span> <span class="op">&lt;</span>table_name<span class="op">&gt;</span> <span class="kw">DROP</span> <span class="kw">COLUMN</span> <span class="op">&lt;</span>column_name<span class="op">&gt;</span>;</span>
+<span id="cb17-13"><a href="#cb17-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-14"><a href="#cb17-14" aria-hidden="true" tabindex="-1"></a><span class="kw">ALTER</span> <span class="kw">TABLE</span> profiles <span class="kw">DROP</span> <span class="kw">COLUMN</span> bio;</span>
+<span id="cb17-15"><a href="#cb17-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-16"><a href="#cb17-16" aria-hidden="true" tabindex="-1"></a><span class="co">-- Change Data Type</span></span>
+<span id="cb17-17"><a href="#cb17-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-18"><a href="#cb17-18" aria-hidden="true" tabindex="-1"></a><span class="kw">ALTER</span> <span class="kw">TABLE</span> <span class="op">&lt;</span>table_name<span class="op">&gt;</span> <span class="kw">ALTER</span> <span class="kw">COLUMN</span> <span class="op">&lt;</span>column_name<span class="op">&gt;</span> <span class="kw">TYPE</span> <span class="op">&lt;</span>NEW_DATA_TYPE<span class="op">&gt;</span>;</span>
+<span id="cb17-19"><a href="#cb17-19" aria-hidden="true" tabindex="-1"></a><span class="kw">ALTER</span> <span class="kw">TABLE</span> profiles <span class="kw">ALTER</span> <span class="kw">COLUMN</span> bio <span class="kw">TYPE</span> TEXT;</span>
+<span id="cb17-20"><a href="#cb17-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-21"><a href="#cb17-21" aria-hidden="true" tabindex="-1"></a><span class="co">-- Constraint</span></span>
+<span id="cb17-22"><a href="#cb17-22" aria-hidden="true" tabindex="-1"></a><span class="kw">ALTER</span> <span class="kw">TABLE</span> profiles <span class="kw">ALTER</span> <span class="kw">COLUMN</span> gender <span class="kw">SET</span> <span class="kw">NOT</span> <span class="kw">NULL</span>;</span>
+<span id="cb17-23"><a href="#cb17-23" aria-hidden="true" tabindex="-1"></a><span class="kw">ALTER</span> <span class="kw">TABLE</span> profiles <span class="kw">ALTER</span> <span class="kw">COLUMN</span> bio <span class="kw">SET</span> <span class="kw">DEFAULT</span> <span class="st">&#39;&#39;</span>;</span>
+<span id="cb17-24"><a href="#cb17-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-25"><a href="#cb17-25" aria-hidden="true" tabindex="-1"></a><span class="kw">ALTER</span> <span class="kw">TABLE</span> profiles <span class="kw">ALTER</span> <span class="kw">COLUMN</span> bio <span class="kw">DROP</span> <span class="kw">DEFAULT</span>;</span></code></pre></div>
+<h3 id="relations">Relations</h3>
+<div class="sourceCode" id="cb18"><pre
+class="sourceCode sql"><code class="sourceCode sql"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="co">-- These tables have a &quot;one-to-one&quot; relationship. One row in the characters table will be related to exactly one row in more_info and vice versa. Enforce that by adding the UNIQUE constraint to your foreign key.</span></span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a><span class="kw">ALTER</span> <span class="kw">TABLE</span> table_name <span class="kw">ADD</span> <span class="kw">UNIQUE</span>(column_name);</span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
+<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a><span class="kw">ALTER</span> <span class="kw">TABLE</span> table_name <span class="kw">ADD</span> <span class="kw">COLUMN</span> column_name DATATYPE CONSTRAIN <span class="kw">REFERENCES</span> referenced_table_name(referenced_column_name);</span>
+<span id="cb18-8"><a href="#cb18-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-9"><a href="#cb18-9" aria-hidden="true" tabindex="-1"></a><span class="kw">ALTER</span> <span class="kw">TABLE</span> additional_info <span class="kw">ADD</span> <span class="kw">COLUMN</span> character_id <span class="dt">VARCHAR</span>(<span class="dv">30</span>) <span class="kw">UNIQUE</span> <span class="kw">REFERENCES</span> characters(character_id);</span></code></pre></div>
+<div class="sourceCode" id="cb19"><pre
+class="sourceCode sql"><code class="sourceCode sql"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="co">-- This will be a &quot;one-to-many&quot; relationship because one character will have many sounds, but no sound will have more than one character. Here&#39;s the example again:</span></span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a><span class="kw">ALTER</span> <span class="kw">TABLE</span> table_name <span class="kw">ADD</span> <span class="kw">COLUMN</span> column_name DATATYPE <span class="kw">CONSTRAINT</span> <span class="kw">REFERENCES</span> referenced_table_name(referenced_column_name);</span></code></pre></div>
+<div class="sourceCode" id="cb20"><pre
+class="sourceCode sql"><code class="sourceCode sql"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="co">-- &quot;Many-to-many&quot; relationships usually use a junction table to link two tables together, forming two &quot;one-to-many&quot; relationships.</span></span></code></pre></div>
+<h2 id="data-manipulation"><strong>DATA MANIPULATION</strong></h2>
+<h3 id="inserting-data">Inserting Data</h3>
+<div class="sourceCode" id="cb21"><pre
+class="sourceCode sql"><code class="sourceCode sql"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="co">-- syntax --</span></span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a><span class="kw">INSERT</span> <span class="kw">INTO</span> <span class="op">&lt;</span>table_name<span class="op">&gt;</span>(<span class="op">&lt;</span>column_name<span class="op">&gt;</span>, <span class="op">&lt;</span>column_name<span class="op">&gt;</span>,<span class="op">..</span>.) <span class="kw">VALUES</span>(<span class="op">&lt;</span><span class="fu">value</span><span class="op">&gt;</span>, <span class="op">&lt;</span><span class="fu">value</span><span class="op">&gt;</span>,<span class="op">..</span>.);</span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a><span class="co">-- examples --</span></span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a><span class="kw">INSERT</span> <span class="kw">INTO</span> persons(<span class="kw">id</span>,username) <span class="kw">VALUES</span>(<span class="dv">1</span>,<span class="st">&#39;Sizar&#39;</span>);</span>
+<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-7"><a href="#cb21-7" aria-hidden="true" tabindex="-1"></a><span class="co">-- Insert into Multiple row/data at the same time</span></span>
+<span id="cb21-8"><a href="#cb21-8" aria-hidden="true" tabindex="-1"></a><span class="kw">INSERT</span> <span class="kw">into</span> users(username, name, email, <span class="kw">role</span>, <span class="kw">profile</span>)</span>
+<span id="cb21-9"><a href="#cb21-9" aria-hidden="true" tabindex="-1"></a>  <span class="kw">values</span>(<span class="st">&#39;luffy&#39;</span>,<span class="st">&#39;Luffy Monkey D.&#39;</span>,<span class="st">&#39;luffy@onepiece.com&#39;</span>,<span class="st">&#39;User&#39;</span>,<span class="dv">3</span>),</span>
+<span id="cb21-10"><a href="#cb21-10" aria-hidden="true" tabindex="-1"></a>  (<span class="st">&#39;demonslayer&#39;</span>,<span class="st">&#39;Tanjirou Kamado&#39;</span>,<span class="st">&#39;tanjirou@demonslayer.com&#39;</span>,<span class="st">&#39;User&#39;</span>,<span class="dv">5</span>);</span>
+<span id="cb21-11"><a href="#cb21-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-12"><a href="#cb21-12" aria-hidden="true" tabindex="-1"></a><span class="co">-- Insert and return values</span></span>
+<span id="cb21-13"><a href="#cb21-13" aria-hidden="true" tabindex="-1"></a><span class="kw">INSERT</span> <span class="kw">INTO</span> users(username,name,email,<span class="kw">role</span>,<span class="kw">profile</span>)</span>
+<span id="cb21-14"><a href="#cb21-14" aria-hidden="true" tabindex="-1"></a>  <span class="kw">VALUES</span>(<span class="st">&#39;jujutsu_sorcerer&#39;</span>,<span class="st">&#39;Satoru Gojou&#39;</span>,<span class="st">&#39;gojou@ujutsu.com&#39;</span>,<span class="st">&#39;User&#39;</span>,<span class="dv">11</span>)</span>
+<span id="cb21-15"><a href="#cb21-15" aria-hidden="true" tabindex="-1"></a>  <span class="kw">RETURNING</span> username, name, email ;</span></code></pre></div>
+<h3 id="updating-data">Updating Data</h3>
+<div class="sourceCode" id="cb22"><pre
+class="sourceCode sql"><code class="sourceCode sql"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="co">-- syntax --</span></span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a><span class="kw">UPDATE</span> <span class="op">&lt;</span>table_name<span class="op">&gt;</span> <span class="kw">SET</span> <span class="op">&lt;</span>column_name<span class="op">&gt;</span> <span class="op">=</span> <span class="op">&lt;</span>new_value<span class="op">&gt;</span> <span class="kw">WHERE</span> <span class="op">&lt;</span>CONDITIONS<span class="op">&gt;</span>;</span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a><span class="co">-- examples --</span></span>
+<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a><span class="kw">UPDATE</span> users <span class="kw">SET</span> name<span class="op">=</span><span class="st">&#39;Monkey D. Luffy&#39;</span> <span class="kw">WHERE</span> username<span class="op">=</span><span class="st">&#39;luffy&#39;</span>;</span>
+<span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-7"><a href="#cb22-7" aria-hidden="true" tabindex="-1"></a><span class="co">-- The new column value can be any scalar expression</span></span>
+<span id="cb22-8"><a href="#cb22-8" aria-hidden="true" tabindex="-1"></a><span class="kw">UPDATE</span> products <span class="kw">SET</span> price <span class="op">=</span> price <span class="op">*</span> <span class="fl">1.10</span>;</span>
+<span id="cb22-9"><a href="#cb22-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-10"><a href="#cb22-10" aria-hidden="true" tabindex="-1"></a><span class="co">-- Update more than one column</span></span>
+<span id="cb22-11"><a href="#cb22-11" aria-hidden="true" tabindex="-1"></a><span class="kw">UPDATE</span> users <span class="kw">SET</span> name <span class="op">=</span> <span class="st">&#39;...&#39;</span>, bio <span class="op">=</span> <span class="st">&#39;...&#39;</span>, website <span class="op">=</span> <span class="st">&#39;...&#39;</span>  <span class="kw">WHERE</span> username<span class="op">=</span> <span class="st">&#39;...&#39;</span>;</span>
+<span id="cb22-12"><a href="#cb22-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-13"><a href="#cb22-13" aria-hidden="true" tabindex="-1"></a><span class="co">-- Update and return values</span></span>
+<span id="cb22-14"><a href="#cb22-14" aria-hidden="true" tabindex="-1"></a><span class="kw">UPDATE</span> users <span class="kw">SET</span> name<span class="op">=</span><span class="st">&#39;Monkey D. Luffy&#39;</span> <span class="kw">WHERE</span> username<span class="op">=</span><span class="st">&#39;luffy&#39;</span> <span class="kw">RETURNING</span> name <span class="kw">as</span> updated_name;</span></code></pre></div>
+<h3 id="deleting-data">Deleting Data</h3>
+<div class="sourceCode" id="cb23"><pre
+class="sourceCode sql"><code class="sourceCode sql"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="co">-- syntax --</span></span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a><span class="kw">DELETE</span> <span class="kw">FROM</span> table_name <span class="kw">WHERE</span> CONDITIONS;</span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a><span class="co">-- examples --</span></span>
+<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a><span class="kw">DELETE</span> <span class="kw">FROM</span> persons <span class="kw">WHERE</span> username<span class="op">=</span><span class="st">&#39;Sizar&#39;</span>;</span></code></pre></div>
+<h2 id="queries"><strong>QUERIES</strong></h2>
+<h3 id="from-clause"><code>FROM</code> Clause</h3>
+<div class="sourceCode" id="cb24"><pre
+class="sourceCode sql"><code class="sourceCode sql"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="co">-- syntax --</span></span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> <span class="op">*</span> <span class="kw">FROM</span> <span class="op">&lt;</span>table_name<span class="op">&gt;</span>;</span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> <span class="op">&lt;</span>column_name<span class="op">&gt;</span>,<span class="op">..</span>. <span class="kw">FROM</span> <span class="op">&lt;</span>table_name<span class="op">&gt;</span></span>
+<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> <span class="op">&lt;</span>column_name<span class="op">&gt;</span>, <span class="op">&lt;</span>column_name<span class="op">&gt;</span> <span class="op">+</span> <span class="op">&lt;</span>column_name<span class="op">&gt;</span> <span class="kw">FROM</span> <span class="op">&lt;</span>table_name<span class="op">&gt;</span></span>
+<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-6"><a href="#cb24-6" aria-hidden="true" tabindex="-1"></a><span class="co">-- example --</span></span>
+<span id="cb24-7"><a href="#cb24-7" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> <span class="op">*</span> <span class="kw">FROM</span> users;</span>
+<span id="cb24-8"><a href="#cb24-8" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> customer_name,  total_price <span class="op">-</span> discount <span class="kw">AS</span> total <span class="kw">FROM</span> cart;</span></code></pre></div>
+<h3 id="join-tables"><code>JOIN</code> Tables</h3>
+<div class="sourceCode" id="cb25"><pre
+class="sourceCode sql"><code class="sourceCode sql"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="co">-- syntax --</span></span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a><span class="op">..</span>. <span class="op">&lt;</span>table_name_1<span class="op">&gt;</span> <span class="op">&lt;</span><span class="kw">JOIN</span> <span class="kw">TYPE</span><span class="op">&gt;</span> <span class="kw">JOIN</span> <span class="op">&lt;</span>table_name_1<span class="op">&gt;</span> <span class="kw">ON</span> <span class="op">&lt;</span>boolean_expression<span class="op">&gt;</span></span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a><span class="op">..</span>. <span class="op">&lt;</span>table_name_1<span class="op">&gt;</span> <span class="op">&lt;</span><span class="kw">JOIN</span> <span class="kw">TYPE</span><span class="op">&gt;</span> <span class="kw">JOIN</span> <span class="op">&lt;</span>table_name_1<span class="op">&gt;</span> <span class="kw">USING</span>(<span class="op">&lt;</span>join_column_name<span class="op">&gt;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb26"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="ex">table_1</span>           table_2</span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a>  <span class="ex">num</span> <span class="kw">|</span> <span class="ex">name</span>        num <span class="kw">|</span> <span class="ex">value</span></span>
+<span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a><span class="ex">------+------</span>     <span class="at">------+------</span></span>
+<span id="cb26-5"><a href="#cb26-5" aria-hidden="true" tabindex="-1"></a>  <span class="ex">1</span>   <span class="kw">|</span>   <span class="ex">a</span>         1   <span class="kw">|</span> <span class="ex">xxx</span></span>
+<span id="cb26-6"><a href="#cb26-6" aria-hidden="true" tabindex="-1"></a>  <span class="ex">2</span>   <span class="kw">|</span>   <span class="ex">b</span>         3   <span class="kw">|</span> <span class="ex">yyy</span></span>
+<span id="cb26-7"><a href="#cb26-7" aria-hidden="true" tabindex="-1"></a>  <span class="ex">3</span>   <span class="kw">|</span>   <span class="ex">c</span>         5   <span class="kw">|</span> <span class="ex">zzz</span></span></code></pre></div>
+<h4 id="inner-join-natural-inner-join"><code>INNER JOIN</code> &amp;
+<code>NATURAL INNER JOIN</code></h4>
+<div class="sourceCode" id="cb27"><pre
+class="sourceCode sql"><code class="sourceCode sql"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> <span class="op">*</span> <span class="kw">FROM</span> table_1 <span class="kw">INNER</span> <span class="kw">JOIN</span> table_2 <span class="kw">ON</span> table_1.num <span class="op">=</span> table_2.num;</span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a> num | name | num | <span class="fu">value</span></span>
+<span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a><span class="co">-----+------+-----+-------</span></span>
+<span id="cb27-5"><a href="#cb27-5" aria-hidden="true" tabindex="-1"></a>   <span class="dv">1</span> | a    |   <span class="dv">1</span> | xxx</span>
+<span id="cb27-6"><a href="#cb27-6" aria-hidden="true" tabindex="-1"></a>   <span class="dv">3</span> | c    |   <span class="dv">3</span> | yyy</span>
+<span id="cb27-7"><a href="#cb27-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb27-8"><a href="#cb27-8" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> <span class="op">*</span> <span class="kw">FROM</span> table_1 <span class="kw">INNER</span> <span class="kw">JOIN</span> table_2 <span class="kw">USING</span> (num);</span>
+<span id="cb27-9"><a href="#cb27-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb27-10"><a href="#cb27-10" aria-hidden="true" tabindex="-1"></a> num | name | <span class="fu">value</span></span>
+<span id="cb27-11"><a href="#cb27-11" aria-hidden="true" tabindex="-1"></a><span class="co">-----+------+-------</span></span>
+<span id="cb27-12"><a href="#cb27-12" aria-hidden="true" tabindex="-1"></a>   <span class="dv">1</span> | a    | xxx</span>
+<span id="cb27-13"><a href="#cb27-13" aria-hidden="true" tabindex="-1"></a>   <span class="dv">3</span> | c    | yyy</span>
+<span id="cb27-14"><a href="#cb27-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb27-15"><a href="#cb27-15" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> <span class="op">*</span> <span class="kw">FROM</span> table_1 <span class="kw">NATURAL</span> <span class="kw">INNER</span> <span class="kw">JOIN</span> table_2;</span>
+<span id="cb27-16"><a href="#cb27-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb27-17"><a href="#cb27-17" aria-hidden="true" tabindex="-1"></a> num | name | <span class="fu">value</span></span>
+<span id="cb27-18"><a href="#cb27-18" aria-hidden="true" tabindex="-1"></a><span class="co">-----+------+-------</span></span>
+<span id="cb27-19"><a href="#cb27-19" aria-hidden="true" tabindex="-1"></a>   <span class="dv">1</span> | a    | xxx</span>
+<span id="cb27-20"><a href="#cb27-20" aria-hidden="true" tabindex="-1"></a>   <span class="dv">3</span> | c    | yyy</span></code></pre></div>
+<h4 id="left-join"><code>LEFT JOIN</code></h4>
+<div class="sourceCode" id="cb28"><pre
+class="sourceCode sql"><code class="sourceCode sql"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> <span class="op">*</span> <span class="kw">FROM</span> table_1 <span class="kw">LEFT</span> <span class="kw">JOIN</span> table_2 <span class="kw">ON</span> table_1.num <span class="op">=</span> table_2.num;</span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a> num | name | num | <span class="fu">value</span></span>
+<span id="cb28-4"><a href="#cb28-4" aria-hidden="true" tabindex="-1"></a><span class="co">-----+------+-----+-------</span></span>
+<span id="cb28-5"><a href="#cb28-5" aria-hidden="true" tabindex="-1"></a>   <span class="dv">1</span> | a    |   <span class="dv">1</span> | xxx</span>
+<span id="cb28-6"><a href="#cb28-6" aria-hidden="true" tabindex="-1"></a>   <span class="dv">2</span> | b    |     |</span>
+<span id="cb28-7"><a href="#cb28-7" aria-hidden="true" tabindex="-1"></a>   <span class="dv">3</span> | c    |   <span class="dv">3</span> | yyy</span>
+<span id="cb28-8"><a href="#cb28-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-9"><a href="#cb28-9" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> <span class="op">*</span> <span class="kw">FROM</span> table_1 <span class="kw">LEFT</span> <span class="kw">JOIN</span> table_2 <span class="kw">USING</span> (num);</span>
+<span id="cb28-10"><a href="#cb28-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-11"><a href="#cb28-11" aria-hidden="true" tabindex="-1"></a> num | name | <span class="fu">value</span></span>
+<span id="cb28-12"><a href="#cb28-12" aria-hidden="true" tabindex="-1"></a><span class="co">-----+------+-------</span></span>
+<span id="cb28-13"><a href="#cb28-13" aria-hidden="true" tabindex="-1"></a>   <span class="dv">1</span> | a    | xxx</span>
+<span id="cb28-14"><a href="#cb28-14" aria-hidden="true" tabindex="-1"></a>   <span class="dv">2</span> | b    |</span>
+<span id="cb28-15"><a href="#cb28-15" aria-hidden="true" tabindex="-1"></a>   <span class="dv">3</span> | c    | yyy</span></code></pre></div>
+<h4 id="right-join"><code>RIGHT JOIN</code></h4>
+<div class="sourceCode" id="cb29"><pre
+class="sourceCode sql"><code class="sourceCode sql"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> <span class="op">*</span> <span class="kw">FROM</span> table_1 <span class="kw">RIGHT</span> <span class="kw">JOIN</span> table_2 <span class="kw">ON</span> table_1.num <span class="op">=</span> table_2.num;</span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a> num | name | num | <span class="fu">value</span></span>
+<span id="cb29-4"><a href="#cb29-4" aria-hidden="true" tabindex="-1"></a><span class="co">-----+------+-----+-------</span></span>
+<span id="cb29-5"><a href="#cb29-5" aria-hidden="true" tabindex="-1"></a>   <span class="dv">1</span> | a    |   <span class="dv">1</span> | xxx</span>
+<span id="cb29-6"><a href="#cb29-6" aria-hidden="true" tabindex="-1"></a>   <span class="dv">3</span> | c    |   <span class="dv">3</span> | yyy</span>
+<span id="cb29-7"><a href="#cb29-7" aria-hidden="true" tabindex="-1"></a>     |      |   <span class="dv">5</span> | zzz</span></code></pre></div>
+<h4 id="full-join"><code>FULL JOIN</code></h4>
+<div class="sourceCode" id="cb30"><pre
+class="sourceCode sql"><code class="sourceCode sql"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> <span class="op">*</span> <span class="kw">FROM</span> table_1 <span class="kw">FULL</span> <span class="kw">JOIN</span> table_2 <span class="kw">ON</span> table_1.num <span class="op">=</span> table_2.num;</span>
+<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a> num | name | num | <span class="fu">value</span></span>
+<span id="cb30-4"><a href="#cb30-4" aria-hidden="true" tabindex="-1"></a><span class="co">-----+------+-----+-------</span></span>
+<span id="cb30-5"><a href="#cb30-5" aria-hidden="true" tabindex="-1"></a>   <span class="dv">1</span> | a    |   <span class="dv">1</span> | xxx</span>
+<span id="cb30-6"><a href="#cb30-6" aria-hidden="true" tabindex="-1"></a>   <span class="dv">2</span> | b    |     |</span>
+<span id="cb30-7"><a href="#cb30-7" aria-hidden="true" tabindex="-1"></a>   <span class="dv">3</span> | c    |   <span class="dv">3</span> | yyy</span>
+<span id="cb30-8"><a href="#cb30-8" aria-hidden="true" tabindex="-1"></a>     |      |   <span class="dv">5</span> | zzz</span></code></pre></div>
+<h4 id="conditional-join">Conditional <code>JOIN</code></h4>
+<div class="sourceCode" id="cb31"><pre
+class="sourceCode sql"><code class="sourceCode sql"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> <span class="op">*</span> <span class="kw">FROM</span> table_1 <span class="kw">LEFT</span> <span class="kw">JOIN</span> table_2 <span class="kw">ON</span> table_1.num <span class="op">=</span> table_2.num <span class="kw">AND</span> table_2.<span class="fu">value</span> <span class="op">=</span> <span class="st">&#39;xxx&#39;</span>;</span>
+<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a> num | name | num | <span class="fu">value</span></span>
+<span id="cb31-4"><a href="#cb31-4" aria-hidden="true" tabindex="-1"></a><span class="co">-----+------+-----+-------</span></span>
+<span id="cb31-5"><a href="#cb31-5" aria-hidden="true" tabindex="-1"></a>   <span class="dv">1</span> | a    |   <span class="dv">1</span> | xxx</span>
+<span id="cb31-6"><a href="#cb31-6" aria-hidden="true" tabindex="-1"></a>   <span class="dv">2</span> | b    |     |</span>
+<span id="cb31-7"><a href="#cb31-7" aria-hidden="true" tabindex="-1"></a>   <span class="dv">3</span> | c    |     |</span>
+<span id="cb31-8"><a href="#cb31-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-9"><a href="#cb31-9" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> <span class="op">*</span> <span class="kw">FROM</span> table_1 <span class="kw">LEFT</span> <span class="kw">JOIN</span> table_2 <span class="kw">ON</span> table_1.num <span class="op">=</span> table_2.num <span class="kw">WHERE</span> table_2.<span class="fu">value</span> <span class="op">=</span> <span class="st">&#39;xxx&#39;</span>;</span>
+<span id="cb31-10"><a href="#cb31-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-11"><a href="#cb31-11" aria-hidden="true" tabindex="-1"></a>   num | name | num | <span class="fu">value</span></span>
+<span id="cb31-12"><a href="#cb31-12" aria-hidden="true" tabindex="-1"></a><span class="co">-----+------+-----+-------</span></span>
+<span id="cb31-13"><a href="#cb31-13" aria-hidden="true" tabindex="-1"></a>   <span class="dv">1</span> | a    |   <span class="dv">1</span> | xxx</span></code></pre></div>
+<h3 id="table-column-aliases"><code>TABLE</code> &amp;
+<code>COLUMN</code> Aliases</h3>
+<div class="sourceCode" id="cb32"><pre
+class="sourceCode sql"><code class="sourceCode sql"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="co">-- syntax --</span></span>
+<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a><span class="op">..</span>.<span class="kw">FROM</span> <span class="op">&lt;</span>table_name<span class="op">&gt;</span> <span class="kw">AS</span> <span class="op">&lt;</span>alias<span class="op">&gt;</span></span>
+<span id="cb32-3"><a href="#cb32-3" aria-hidden="true" tabindex="-1"></a><span class="op">..</span>.<span class="kw">FROM</span> <span class="op">&lt;</span>table_name<span class="op">&gt;</span> <span class="op">&lt;</span>alias<span class="op">&gt;</span></span>
+<span id="cb32-4"><a href="#cb32-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb32-5"><a href="#cb32-5" aria-hidden="true" tabindex="-1"></a><span class="co">-- example --</span></span>
+<span id="cb32-6"><a href="#cb32-6" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> <span class="op">*</span> <span class="kw">FROM</span> users <span class="kw">AS</span> u <span class="kw">INNER</span> <span class="kw">JOIN</span> profiles <span class="kw">AS</span> p <span class="kw">ON</span> u.user_id <span class="op">=</span> p.user_id;</span>
+<span id="cb32-7"><a href="#cb32-7" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> <span class="op">*</span> <span class="kw">FROM</span> users u <span class="kw">INNER</span> <span class="kw">JOIN</span> profiles p <span class="kw">ON</span> u.user_id <span class="op">=</span> p.user_id;</span>
+<span id="cb32-8"><a href="#cb32-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb32-9"><a href="#cb32-9" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> <span class="op">*</span> <span class="kw">FROM</span> people <span class="kw">AS</span> mother <span class="kw">JOIN</span> people <span class="kw">AS</span> <span class="kw">child</span> <span class="kw">ON</span> mother.<span class="kw">id</span> <span class="op">=</span> <span class="kw">child</span>.mother_id;</span>
+<span id="cb32-10"><a href="#cb32-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb32-11"><a href="#cb32-11" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> u.name, u.username, p.gender <span class="kw">FROM</span> users <span class="kw">AS</span> u <span class="kw">INNER</span> <span class="kw">JOIN</span> profiles <span class="kw">AS</span> p <span class="kw">ON</span> u.user_id <span class="op">=</span> p.user_id;</span></code></pre></div>
+<h3 id="where-clause"><code>WHERE</code> Clause</h3>
+<div class="sourceCode" id="cb33"><pre
+class="sourceCode sql"><code class="sourceCode sql"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="co">-- syntax --</span></span>
+<span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a><span class="op">..</span>. <span class="kw">WHERE</span> <span class="op">&lt;</span>CONDITION<span class="op">&gt;</span></span>
+<span id="cb33-3"><a href="#cb33-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb33-4"><a href="#cb33-4" aria-hidden="true" tabindex="-1"></a><span class="co">-- examples --</span></span>
+<span id="cb33-5"><a href="#cb33-5" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> <span class="op">*</span> <span class="kw">FROM</span> users <span class="kw">INNER</span> <span class="kw">JOIN</span> profiles <span class="kw">USING</span>(user_id) <span class="kw">WHERE</span> username <span class="op">&lt;</span> <span class="st">&#39;d&#39;</span>;</span>
+<span id="cb33-6"><a href="#cb33-6" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> <span class="op">*</span> <span class="kw">FROM</span> users <span class="kw">INNER</span> <span class="kw">JOIN</span> profiles <span class="kw">USING</span>(user_id) <span class="kw">WHERE</span> <span class="kw">role</span> <span class="kw">IN</span> (<span class="st">&#39;Admin&#39;</span>,<span class="st">&#39;Author&#39;</span>);</span>
+<span id="cb33-7"><a href="#cb33-7" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> <span class="op">*</span> <span class="kw">FROM</span> users <span class="kw">INNER</span> <span class="kw">JOIN</span> profiles <span class="kw">USING</span>(user_id) <span class="kw">WHERE</span> <span class="kw">role</span> <span class="kw">IN</span> (<span class="kw">SELECT</span> <span class="kw">role</span> <span class="kw">FROM</span> users <span class="kw">WHERE</span> user_id <span class="op">=</span> <span class="dv">1</span>);</span>
+<span id="cb33-8"><a href="#cb33-8" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> <span class="op">*</span> <span class="kw">FROM</span> users <span class="kw">INNER</span> <span class="kw">JOIN</span> profiles <span class="kw">USING</span>(user_id) <span class="kw">WHERE</span> gender <span class="op">=</span> <span class="st">&#39;Female&#39;</span> <span class="kw">AND</span> <span class="kw">role</span> <span class="op">=</span> <span class="st">&#39;Admin&#39;</span>;</span></code></pre></div>
+<h3 id="group-by-having-clause"><code>GROUP BY</code> &amp;
+<code>HAVING</code> Clause</h3>
+<h4 id="group-by"><code>GROUP BY</code></h4>
+<div class="sourceCode" id="cb34"><pre
+class="sourceCode sql"><code class="sourceCode sql"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a><span class="co">-- syntax --</span></span>
+<span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> <span class="op">..</span>. <span class="kw">FROM</span> <span class="op">..</span>. <span class="kw">GROUP</span> <span class="kw">BY</span> <span class="op">&lt;</span>grouping_column_reference<span class="op">&gt;</span> [,<span class="op">..</span>.];</span>
+<span id="cb34-3"><a href="#cb34-3" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> <span class="op">..</span>. <span class="kw">FROM</span> <span class="op">..</span>. <span class="kw">WHERE</span> <span class="op">..</span>. <span class="kw">GROUP</span> <span class="kw">BY</span> <span class="op">&lt;</span>grouping_column_reference<span class="op">&gt;</span> [,<span class="op">..</span>.];</span>
+<span id="cb34-4"><a href="#cb34-4" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> <span class="op">..</span>., <span class="op">&lt;</span>aggregate_expressions<span class="op">&gt;</span> <span class="kw">FROM</span> <span class="op">..</span>. <span class="kw">WHERE</span> <span class="op">..</span>. <span class="kw">GROUP</span> <span class="kw">BY</span> <span class="op">&lt;</span>grouping_column_reference<span class="op">&gt;</span> [,<span class="op">..</span>.];</span>
+<span id="cb34-5"><a href="#cb34-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb34-6"><a href="#cb34-6" aria-hidden="true" tabindex="-1"></a><span class="co">-- examples --</span></span>
+<span id="cb34-7"><a href="#cb34-7" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> gender <span class="kw">FROM</span> users <span class="kw">INNER</span> <span class="kw">JOIN</span> profiles <span class="kw">USING</span>(user_id) <span class="kw">GROUP</span> <span class="kw">BY</span> gender;</span>
+<span id="cb34-8"><a href="#cb34-8" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> gender, <span class="fu">count</span>(username) <span class="kw">AS</span> total_users_by_gender</span>
+<span id="cb34-9"><a href="#cb34-9" aria-hidden="true" tabindex="-1"></a>  <span class="kw">FROM</span> users <span class="kw">INNER</span> <span class="kw">JOIN</span> profiles <span class="kw">USING</span>(user_id)</span>
+<span id="cb34-10"><a href="#cb34-10" aria-hidden="true" tabindex="-1"></a>  <span class="kw">GROUP</span> <span class="kw">BY</span> gender;</span></code></pre></div>
+<h4 id="having"><code>HAVING</code></h4>
+<div class="sourceCode" id="cb35"><pre
+class="sourceCode sql"><code class="sourceCode sql"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a><span class="co">-- syntax --</span></span>
+<span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> <span class="op">..</span>. <span class="kw">FROM</span> <span class="op">..</span>. <span class="kw">GROUP</span> <span class="kw">BY</span> <span class="op">..</span>. <span class="kw">HAVING</span> <span class="op">&lt;</span>boolean_expression | conditions<span class="op">&gt;</span>;</span>
+<span id="cb35-3"><a href="#cb35-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb35-4"><a href="#cb35-4" aria-hidden="true" tabindex="-1"></a><span class="co">-- examples --</span></span>
+<span id="cb35-5"><a href="#cb35-5" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> gender, <span class="fu">count</span>(username) <span class="kw">AS</span> total_users_by_gender <span class="kw">FROM</span> users <span class="kw">INNER</span> <span class="kw">JOIN</span> profiles <span class="kw">USING</span>(user_id) <span class="kw">GROUP</span> <span class="kw">BY</span> gender <span class="kw">HAVING</span> <span class="fu">count</span>(username) <span class="op">&gt;</span> <span class="dv">4</span>;</span>
+<span id="cb35-6"><a href="#cb35-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb35-7"><a href="#cb35-7" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> product_id, p.name, (<span class="fu">sum</span>(s.units) <span class="op">*</span> (p.price <span class="op">-</span> p.<span class="kw">cost</span>)) <span class="kw">AS</span> profit</span>
+<span id="cb35-8"><a href="#cb35-8" aria-hidden="true" tabindex="-1"></a>    <span class="kw">FROM</span> products p <span class="kw">LEFT</span> <span class="kw">JOIN</span> sales s <span class="kw">USING</span> (product_id)</span>
+<span id="cb35-9"><a href="#cb35-9" aria-hidden="true" tabindex="-1"></a>    <span class="kw">WHERE</span> s.<span class="dt">date</span> <span class="op">&gt;</span> <span class="fu">CURRENT_DATE</span> <span class="op">-</span> <span class="dt">INTERVAL</span> <span class="st">&#39;4 weeks&#39;</span></span>
+<span id="cb35-10"><a href="#cb35-10" aria-hidden="true" tabindex="-1"></a>    <span class="kw">GROUP</span> <span class="kw">BY</span> product_id, p.name, p.price, p.<span class="kw">cost</span></span>
+<span id="cb35-11"><a href="#cb35-11" aria-hidden="true" tabindex="-1"></a>    <span class="kw">HAVING</span> <span class="fu">sum</span>(p.price <span class="op">*</span> s.units) <span class="op">&gt;</span> <span class="dv">5000</span>;</span></code></pre></div>
+<h3 id="grouping-sets-cube-and-rollup"><code>GROUPING SETS</code>,
+<code>CUBE</code>, and <code>ROLLUP</code></h3>
+<div class="sourceCode" id="cb36"><pre
+class="sourceCode sql"><code class="sourceCode sql"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a><span class="co">-- Grouping Sets</span></span>
+<span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-3"><a href="#cb36-3" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> <span class="kw">role</span>,<span class="fu">count</span>(username) <span class="kw">FROM</span> users <span class="kw">GROUP</span> <span class="kw">BY</span> <span class="fu">GROUPING</span> SETS ((<span class="kw">role</span>),());</span>
+<span id="cb36-4"><a href="#cb36-4" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> brand, <span class="kw">size</span>, <span class="fu">sum</span>(sales) <span class="kw">FROM</span> items_sold <span class="kw">GROUP</span> <span class="kw">BY</span> <span class="fu">GROUPING</span> SETS ((brand), (<span class="kw">size</span>), ());</span></code></pre></div>
+<h3 id="order-by"><code>ORDER BY</code></h3>
+<div class="sourceCode" id="cb37"><pre
+class="sourceCode sql"><code class="sourceCode sql"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a><span class="co">-- syntax --</span></span>
+<span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> <span class="op">&lt;</span>column_name<span class="op">&gt;</span> <span class="kw">FROM</span> <span class="op">&lt;</span>table_name<span class="op">&gt;</span> <span class="kw">ORDER</span> <span class="kw">BY</span> <span class="op">&lt;</span>sort_expression | column_name<span class="op">&gt;</span>;</span>
+<span id="cb37-3"><a href="#cb37-3" aria-hidden="true" tabindex="-1"></a><span class="co">-- [ASC | DESC] [NULLS { FIRST | LAST }]</span></span>
+<span id="cb37-4"><a href="#cb37-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb37-5"><a href="#cb37-5" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> <span class="op">*</span> <span class="kw">FROM</span> users <span class="kw">ORDER</span> <span class="kw">BY</span> username</span>
+<span id="cb37-6"><a href="#cb37-6" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> <span class="op">*</span> <span class="kw">FROM</span> users <span class="kw">ORDER</span> <span class="kw">BY</span> username <span class="kw">DESC</span>;</span></code></pre></div>
+<h3 id="limit-offset"><code>LIMIT</code> &amp; <code>OFFSET</code></h3>
+<div class="sourceCode" id="cb38"><pre
+class="sourceCode sql"><code class="sourceCode sql"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a><span class="co">-- syntax --</span></span>
+<span id="cb38-2"><a href="#cb38-2" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> <span class="op">&lt;</span>column_name<span class="op">&gt;</span> <span class="kw">FROM</span> <span class="op">&lt;</span>table_name<span class="op">&gt;</span> <span class="kw">ORDER</span> <span class="kw">BY</span> <span class="op">&lt;</span>column_name<span class="op">&gt;</span> <span class="kw">LIMIT</span> <span class="op">&lt;</span><span class="dt">number</span><span class="op">&gt;</span>;</span>
+<span id="cb38-3"><a href="#cb38-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb38-4"><a href="#cb38-4" aria-hidden="true" tabindex="-1"></a><span class="co">-- example --</span></span>
+<span id="cb38-5"><a href="#cb38-5" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> <span class="op">*</span> <span class="kw">FROM</span> users <span class="kw">ORDER</span> <span class="kw">BY</span> user_id <span class="kw">LIMIT</span> <span class="dv">5</span>;</span>
+<span id="cb38-6"><a href="#cb38-6" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> <span class="op">*</span> <span class="kw">FROM</span> users <span class="kw">ORDER</span> <span class="kw">BY</span> user_id <span class="kw">LIMIT</span> <span class="dv">5</span> OFFSET <span class="dv">2</span>;</span></code></pre></div>
+<h2 id="schemas"><strong>SCHEMAS</strong></h2>
+<div class="sourceCode" id="cb39"><pre
+class="sourceCode sql"><code class="sourceCode sql"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a><span class="co">-- Show all schema</span></span>
+<span id="cb39-2"><a href="#cb39-2" aria-hidden="true" tabindex="-1"></a>\dn</span>
+<span id="cb39-3"><a href="#cb39-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb39-4"><a href="#cb39-4" aria-hidden="true" tabindex="-1"></a><span class="co">-- Create Schema</span></span>
+<span id="cb39-5"><a href="#cb39-5" aria-hidden="true" tabindex="-1"></a><span class="kw">CREATE</span> <span class="kw">SCHEMA</span> <span class="op">&lt;</span>schema_name<span class="op">&gt;</span></span>
+<span id="cb39-6"><a href="#cb39-6" aria-hidden="true" tabindex="-1"></a><span class="kw">CREATE</span> <span class="kw">SCHEMA</span> <span class="op">&lt;</span>schema_name<span class="op">&gt;</span> <span class="kw">AUTHORIZATION</span> <span class="op">&lt;</span>user_name<span class="op">&gt;</span></span>
+<span id="cb39-7"><a href="#cb39-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb39-8"><a href="#cb39-8" aria-hidden="true" tabindex="-1"></a><span class="kw">CREATE</span> <span class="kw">SCHEMA</span> private_schema;</span>
+<span id="cb39-9"><a href="#cb39-9" aria-hidden="true" tabindex="-1"></a><span class="kw">CREATE</span> <span class="kw">SCHEMA</span> private_schema <span class="kw">AUTHORIZATION</span> galactus;</span>
+<span id="cb39-10"><a href="#cb39-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb39-11"><a href="#cb39-11" aria-hidden="true" tabindex="-1"></a><span class="co">-- To create or access objects in a schema</span></span>
+<span id="cb39-12"><a href="#cb39-12" aria-hidden="true" tabindex="-1"></a><span class="kw">CREATE</span> <span class="kw">TABLE</span> <span class="op">&lt;</span>schema_name<span class="op">&gt;</span>.<span class="op">&lt;</span>table_name<span class="op">&gt;</span>();</span>
+<span id="cb39-13"><a href="#cb39-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb39-14"><a href="#cb39-14" aria-hidden="true" tabindex="-1"></a><span class="kw">CREATE</span> <span class="kw">TABLE</span> private_schema.users();</span>
+<span id="cb39-15"><a href="#cb39-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb39-16"><a href="#cb39-16" aria-hidden="true" tabindex="-1"></a><span class="co">-- Drop schema</span></span>
+<span id="cb39-17"><a href="#cb39-17" aria-hidden="true" tabindex="-1"></a><span class="kw">DROP</span> <span class="kw">SCHEMA</span> <span class="op">&lt;</span>schema_name<span class="op">&gt;</span>;</span>
+<span id="cb39-18"><a href="#cb39-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb39-19"><a href="#cb39-19" aria-hidden="true" tabindex="-1"></a><span class="kw">DROP</span> <span class="kw">SCHEMA</span> private_schema;</span>
+<span id="cb39-20"><a href="#cb39-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb39-21"><a href="#cb39-21" aria-hidden="true" tabindex="-1"></a><span class="co">-- Drop schema including everything inside</span></span>
+<span id="cb39-22"><a href="#cb39-22" aria-hidden="true" tabindex="-1"></a><span class="kw">DROP</span> <span class="kw">SCHEMA</span> private_schema <span class="kw">CASCADE</span>;</span></code></pre></div>
+<h3 id="search-path">Search Path</h3>
+<div class="sourceCode" id="cb40"><pre
+class="sourceCode sql"><code class="sourceCode sql"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a><span class="co">-- show current search path</span></span>
+<span id="cb40-2"><a href="#cb40-2" aria-hidden="true" tabindex="-1"></a>SHOW search_path;</span>
+<span id="cb40-3"><a href="#cb40-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-4"><a href="#cb40-4" aria-hidden="true" tabindex="-1"></a><span class="co">-- set different search path</span></span>
+<span id="cb40-5"><a href="#cb40-5" aria-hidden="true" tabindex="-1"></a><span class="kw">SET</span> search_path <span class="kw">TO</span> <span class="op">&lt;</span>to_new_schema_name<span class="op">&gt;</span>, <span class="kw">public</span>;</span>
+<span id="cb40-6"><a href="#cb40-6" aria-hidden="true" tabindex="-1"></a><span class="kw">SET</span> search_path <span class="kw">TO</span> <span class="op">&lt;</span>to_new_schema_name<span class="op">&gt;</span>;</span></code></pre></div>
+<h2 id="database-roles"><strong>DATABASE ROLES</strong></h2>
+<h3 id="role-attributes">Role Attributes</h3>
+<table>
+<thead>
+<tr class="header">
+<th>Parameter</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>name</code>, <code>&lt;role_name&gt;</code>,
+<code>&lt;user_name&gt;</code></td>
+<td></td>
+</tr>
+<tr class="even">
+<td><code>SUPERUSER</code>, <code>NOSUPERUSER</code></td>
+<td>Superuser status</td>
+</tr>
+<tr class="odd">
+<td><code>CREATEDB</code>, <code>NOCREATEDB</code></td>
+<td>Database creation</td>
+</tr>
+<tr class="even">
+<td><code>CREATEROLE</code>,<code>NOCREATEROLE</code></td>
+<td>Role creation</td>
+</tr>
+<tr class="odd">
+<td><code>INHERIT</code>,<code>NOINHERIT</code></td>
+<td>Inheritance of privileges</td>
+</tr>
+<tr class="even">
+<td><code>LOGIN</code>,<code>NOLOGIN</code></td>
+<td>Login privilege</td>
+</tr>
+<tr class="odd">
+<td><code>BYPASSRLS</code>,<code>NOBYPASSRLS</code></td>
+<td>Bypassing row-level security</td>
+</tr>
+<tr class="even">
+<td><code>CONNECTION LIMIT &lt;connlimit&gt;</code></td>
+<td>Connection limit</td>
+</tr>
+<tr class="odd">
+<td><code>ENCRYPTED PASSWORD 'password'</code></td>
+<td></td>
+</tr>
+<tr class="even">
+<td><code>VALID UNTIL 'timestamp'</code></td>
+<td></td>
+</tr>
+<tr class="odd">
+<td><code>IN ROLE &lt;role_name&gt; [,...]</code></td>
+<td></td>
+</tr>
+<tr class="even">
+<td><code>IN GROUP &lt;role_name&gt; [,...]</code></td>
+<td></td>
+</tr>
+<tr class="odd">
+<td><code>ROLE &lt;role_name&gt;</code></td>
+<td></td>
+</tr>
+<tr class="even">
+<td><code>ADMIN &lt;role_name&gt;</code></td>
+<td></td>
+</tr>
+<tr class="odd">
+<td><code>USER &lt;role_name&gt;</code></td>
+<td></td>
+</tr>
+<tr class="even">
+<td><code>SYSID uid</code></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<div class="sourceCode" id="cb41"><pre
+class="sourceCode sql"><code class="sourceCode sql"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a><span class="co">-- List of roles</span></span>
+<span id="cb41-2"><a href="#cb41-2" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> rolname <span class="kw">FROM</span> pg_roles;</span>
+<span id="cb41-3"><a href="#cb41-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb41-4"><a href="#cb41-4" aria-hidden="true" tabindex="-1"></a><span class="co">-- Listing the existing roles.</span></span>
+<span id="cb41-5"><a href="#cb41-5" aria-hidden="true" tabindex="-1"></a>\du</span></code></pre></div>
+<h3 id="create-role-create-user"><code>CREATE ROLE</code> |
+<code>CREATE USER</code></h3>
+<div class="sourceCode" id="cb42"><pre
+class="sourceCode sql"><code class="sourceCode sql"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a><span class="co">-- syntax --</span></span>
+<span id="cb42-2"><a href="#cb42-2" aria-hidden="true" tabindex="-1"></a><span class="kw">CREATE</span> <span class="kw">ROLE</span> <span class="op">&lt;</span>role_name<span class="op">&gt;</span> <span class="kw">WITH</span> <span class="op">&lt;</span>role_attribute<span class="op">&gt;</span></span>
+<span id="cb42-3"><a href="#cb42-3" aria-hidden="true" tabindex="-1"></a><span class="kw">CREATE</span> <span class="fu">USER</span> <span class="op">&lt;</span>user_name<span class="op">&gt;</span> <span class="kw">WITH</span> <span class="op">&lt;</span>role_attribute<span class="op">&gt;</span></span>
+<span id="cb42-4"><a href="#cb42-4" aria-hidden="true" tabindex="-1"></a><span class="kw">CREATE</span> <span class="kw">ROLE</span> <span class="op">&lt;</span>role_name<span class="op">&gt;</span> <span class="op">&lt;</span>role_attribute<span class="op">&gt;</span>;</span>
+<span id="cb42-5"><a href="#cb42-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb42-6"><a href="#cb42-6" aria-hidden="true" tabindex="-1"></a><span class="co">-- examples --</span></span>
+<span id="cb42-7"><a href="#cb42-7" aria-hidden="true" tabindex="-1"></a><span class="kw">CREATE</span> <span class="fu">USER</span> galactus <span class="kw">WITH</span> SUPERUSER <span class="kw">PASSWORD</span> <span class="st">&#39;password&#39;</span></span>
+<span id="cb42-8"><a href="#cb42-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb42-9"><a href="#cb42-9" aria-hidden="true" tabindex="-1"></a><span class="kw">CREATE</span> <span class="kw">ROLE</span> db_admin <span class="kw">WITH</span> CREATEDB CREATEROLE;</span>
+<span id="cb42-10"><a href="#cb42-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb42-11"><a href="#cb42-11" aria-hidden="true" tabindex="-1"></a><span class="co">-- Create a role with a password that is valid until the end of 2004. After one second has ticked in 2005, the password is no longer valid.</span></span>
+<span id="cb42-12"><a href="#cb42-12" aria-hidden="true" tabindex="-1"></a><span class="kw">CREATE</span> <span class="kw">ROLE</span> silver_surfer <span class="kw">WITH</span> LOGIN <span class="kw">PASSWORD</span> <span class="st">&#39;jw8s0F4&#39;</span> VALID <span class="kw">UNTIL</span> <span class="st">&#39;2005-01-01&#39;</span>;</span></code></pre></div>
+<h3 id="set-role-reset-role"><code>SET ROLE</code>,
+<code>RESET ROLE</code></h3>
+<div class="sourceCode" id="cb43"><pre
+class="sourceCode sql"><code class="sourceCode sql"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a><span class="co">-- Show active role</span></span>
+<span id="cb43-2"><a href="#cb43-2" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> current_user;</span>
+<span id="cb43-3"><a href="#cb43-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb43-4"><a href="#cb43-4" aria-hidden="true" tabindex="-1"></a><span class="co">-- Set/Switch to other role</span></span>
+<span id="cb43-5"><a href="#cb43-5" aria-hidden="true" tabindex="-1"></a><span class="kw">SET</span> <span class="kw">ROLE</span> <span class="op">&lt;</span>role_name|user_name<span class="op">&gt;</span></span>
+<span id="cb43-6"><a href="#cb43-6" aria-hidden="true" tabindex="-1"></a><span class="kw">SET</span> <span class="kw">ROLE</span> aurora</span>
+<span id="cb43-7"><a href="#cb43-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb43-8"><a href="#cb43-8" aria-hidden="true" tabindex="-1"></a><span class="co">-- Reset To default role</span></span>
+<span id="cb43-9"><a href="#cb43-9" aria-hidden="true" tabindex="-1"></a><span class="kw">RESET</span> <span class="kw">ROLE</span>;</span></code></pre></div>
+<h3 id="alter-role"><code>ALTER ROLE</code></h3>
+<div class="sourceCode" id="cb44"><pre
+class="sourceCode sql"><code class="sourceCode sql"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a><span class="co">-- syntax --</span></span>
+<span id="cb44-2"><a href="#cb44-2" aria-hidden="true" tabindex="-1"></a><span class="kw">ALTER</span> <span class="kw">ROLE</span> <span class="op">&lt;</span>role_name<span class="op">&gt;</span> <span class="kw">WITH</span> <span class="op">&lt;</span>new_role_attribute<span class="op">&gt;</span></span>
+<span id="cb44-3"><a href="#cb44-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb44-4"><a href="#cb44-4" aria-hidden="true" tabindex="-1"></a><span class="co">--example --</span></span>
+<span id="cb44-5"><a href="#cb44-5" aria-hidden="true" tabindex="-1"></a><span class="kw">ALTER</span> <span class="kw">ROLE</span> db_admin <span class="kw">WITH</span> NOCREATEROLE ;</span>
+<span id="cb44-6"><a href="#cb44-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb44-7"><a href="#cb44-7" aria-hidden="true" tabindex="-1"></a><span class="kw">ALTER</span> <span class="fu">USER</span> aurora valid <span class="kw">until</span> <span class="st">&#39;Jan 9 3:15:00 2023 +6&#39;</span></span></code></pre></div>
+<h3 id="drop-role-reassign"><code>DROP ROLE</code>,
+<code>REASSIGN</code></h3>
+<div class="sourceCode" id="cb45"><pre
+class="sourceCode sql"><code class="sourceCode sql"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a><span class="co">-- syntax --</span></span>
+<span id="cb45-2"><a href="#cb45-2" aria-hidden="true" tabindex="-1"></a><span class="kw">DROP</span> <span class="kw">ROLE</span> <span class="op">&lt;</span>role_name<span class="op">&gt;</span></span>
+<span id="cb45-3"><a href="#cb45-3" aria-hidden="true" tabindex="-1"></a><span class="kw">DROP</span> <span class="fu">USER</span> <span class="op">&lt;</span>user_name<span class="op">&gt;</span></span>
+<span id="cb45-4"><a href="#cb45-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb45-5"><a href="#cb45-5" aria-hidden="true" tabindex="-1"></a><span class="co">-- examples --</span></span>
+<span id="cb45-6"><a href="#cb45-6" aria-hidden="true" tabindex="-1"></a><span class="kw">DROP</span> <span class="fu">USER</span> <span class="cf">IF</span> <span class="kw">EXISTS</span> galactus;</span>
+<span id="cb45-7"><a href="#cb45-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb45-8"><a href="#cb45-8" aria-hidden="true" tabindex="-1"></a><span class="co">-- Change Owner</span></span>
+<span id="cb45-9"><a href="#cb45-9" aria-hidden="true" tabindex="-1"></a><span class="kw">ALTER</span> <span class="kw">TABLE</span> <span class="op">&lt;</span>table_name<span class="op">&gt;</span> OWNER <span class="kw">TO</span> <span class="op">&lt;</span>to_new_owner_name<span class="op">&gt;</span>;</span>
+<span id="cb45-10"><a href="#cb45-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb45-11"><a href="#cb45-11" aria-hidden="true" tabindex="-1"></a><span class="kw">ALTER</span> <span class="kw">TABLE</span> galaxies OWNER <span class="kw">TO</span> sizar;</span>
+<span id="cb45-12"><a href="#cb45-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb45-13"><a href="#cb45-13" aria-hidden="true" tabindex="-1"></a><span class="co">-- Reassign Role</span></span>
+<span id="cb45-14"><a href="#cb45-14" aria-hidden="true" tabindex="-1"></a>REASSIGN OWNED <span class="kw">BY</span> <span class="op">&lt;</span>current_owner_name<span class="op">&gt;</span> <span class="kw">to</span> <span class="op">&lt;</span>new_owner_name<span class="op">&gt;</span>;</span>
+<span id="cb45-15"><a href="#cb45-15" aria-hidden="true" tabindex="-1"></a>REASSIGN OWNED <span class="kw">BY</span> aurora <span class="kw">to</span> sizarcorpse;</span>
+<span id="cb45-16"><a href="#cb45-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb45-17"><a href="#cb45-17" aria-hidden="true" tabindex="-1"></a><span class="co">-- Drop owned</span></span>
+<span id="cb45-18"><a href="#cb45-18" aria-hidden="true" tabindex="-1"></a><span class="kw">DROP</span> OWNED <span class="kw">BY</span> <span class="op">&lt;</span>owner_name<span class="op">&gt;</span>;</span>
+<span id="cb45-19"><a href="#cb45-19" aria-hidden="true" tabindex="-1"></a><span class="kw">DROP</span> OWNED <span class="kw">BY</span> <span class="op">&lt;</span>owner_name<span class="op">&gt;</span> <span class="kw">CASCADE</span>;</span></code></pre></div>
+<h2 id="privileges-grant-revoke"><strong>PRIVILEGES</strong>
+<code>GRANT</code> &amp; <code>REVOKE</code></h2>
+<h3 id="privileges-attributes-and-abbreviations">Privileges Attributes
+and Abbreviations</h3>
+<table>
+<colgroup>
+<col style="width: 31%" />
+<col style="width: 50%" />
+<col style="width: 17%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Privilege</th>
+<th>Applicable Object Types</th>
+<th>Abbreviation</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>SELECT</code></td>
+<td><code>TABLE</code></td>
+<td><code>r</code></td>
+</tr>
+<tr class="even">
+<td><code>INSERT</code></td>
+<td><code>TABLE</code></td>
+<td><code>a</code></td>
+</tr>
+<tr class="odd">
+<td><code>UPDATE</code></td>
+<td><code>TABLE</code></td>
+<td><code>w</code></td>
+</tr>
+<tr class="even">
+<td><code>DELETE</code></td>
+<td><code>TABLE</code></td>
+<td><code>d</code></td>
+</tr>
+<tr class="odd">
+<td><code>TRUNCATE</code></td>
+<td><code>TABLE</code></td>
+<td><code>D</code></td>
+</tr>
+<tr class="even">
+<td><code>REFERENCES</code></td>
+<td><code>TABLE</code></td>
+<td><code>x</code></td>
+</tr>
+<tr class="odd">
+<td><code>TRIGGER</code></td>
+<td><code>TABLE</code></td>
+<td><code>t</code></td>
+</tr>
+<tr class="even">
+<td><code>ALL</code></td>
+<td><code>TABLE</code></td>
+<td><code>| | `SELECT`               | `table_column`                      | `r`          | | `INSERT`               | `table_column`                      | `a`          | | `UPDATE`               | `table_column`                      | `w`          | | `REFERENCES`           | `table_column`                      |</code></td>
+</tr>
+<tr class="odd">
+<td><code>ALL</code></td>
+<td><code>table_column</code></td>
+<td><code>| | `USAGE`                | `SEQUENCE`                          | `U`          | | `SELECT`               | `SEQUENCE`                          | `r`          | | `UPDATE`               | `SEQUENCE`                          | `w`          | | `ALL`                  | `SEQUENCE`                          |</code></td>
+</tr>
+<tr class="even">
+<td><code>CREATE</code></td>
+<td><code>DATABASE</code></td>
+<td><code>C</code></td>
+</tr>
+<tr class="odd">
+<td><code>CONNECT</code></td>
+<td><code>DATABASE</code></td>
+<td><code>c</code></td>
+</tr>
+<tr class="even">
+<td><code>TEMPORARY</code></td>
+<td><code>DATABASE</code></td>
+<td><code>T</code></td>
+</tr>
+<tr class="odd">
+<td><code>TEMP</code></td>
+<td><code>DATABASE</code></td>
+<td><code>| | `ALL`                  | `DATABASE`                          |</code></td>
+</tr>
+<tr class="even">
+<td><code>USAGE</code></td>
+<td><code>DOMAIN</code></td>
+<td><code>U</code></td>
+</tr>
+<tr class="odd">
+<td><code>ALL</code></td>
+<td><code>DOMAIN</code></td>
+<td><code>| | `USAGE`                | `FOREIGN DATA WRAPPER`              | `U`          | | `ALL`                  | `FOREIGN DATA WRAPPER`              |</code></td>
+</tr>
+<tr class="even">
+<td><code>USAGE</code></td>
+<td><code>FOREIGN SERVER</code></td>
+<td><code>U</code></td>
+</tr>
+<tr class="odd">
+<td><code>ALL</code></td>
+<td><code>FOREIGN SERVER</code></td>
+<td><code>| | `EXECUTE`              | `FUNCTION`,`PROCEDURE`,`ROUTINE`    | `X`          | | `ALL`                  | `FUNCTIONS`,`PROCEDURES`,`ROUTINES` |</code></td>
+</tr>
+<tr class="even">
+<td><code>USAGE</code></td>
+<td><code>LANGUAGE</code></td>
+<td><code>U</code></td>
+</tr>
+<tr class="odd">
+<td><code>ALL</code></td>
+<td><code>LANGUAGE</code></td>
+<td><code>| | `SELECT`               | `LARGE OBJECT`                      | `r`          | | `UPDATE`               | `LARGE OBJECT`                      | `w`          | | `ALL`                  | `LARGE OBJECT`                      |</code></td>
+</tr>
+<tr class="even">
+<td><code>SET</code></td>
+<td><code>PARAMETER</code></td>
+<td><code>s</code></td>
+</tr>
+<tr class="odd">
+<td><code>ALTER SYSTEM</code></td>
+<td><code>PARAMETER</code></td>
+<td><code>A</code></td>
+</tr>
+<tr class="even">
+<td><code>ALL</code></td>
+<td><code>PARAMETER</code></td>
+<td><code>| | `CREATE`               | `SCHEMA`                            | `C`          | | `USAGE`                | `SCHEMA`                            | `U`          | | `ALL`                  | `SCHEMA`                            |</code></td>
+</tr>
+<tr class="odd">
+<td><code>CREATE</code></td>
+<td><code>TABLESPACE</code></td>
+<td><code>C</code></td>
+</tr>
+<tr class="even">
+<td><code>ALL</code></td>
+<td><code>TABLESPACE</code></td>
+<td><code>| | `USAGE`                | `TYPE`                              | `U`          | | `ALL`                  | `TYPE`                              |</code></td>
+</tr>
+<tr class="odd">
+<td>–</td>
+<td>–</td>
+<td>–</td>
+</tr>
+<tr class="even">
+<td><code>ALL TABLES IN SCHEMA</code></td>
+<td>“”</td>
+<td>“”</td>
+</tr>
+</tbody>
+</table>
+<h3 id="grant"><code>GRANT</code></h3>
+<div class="sourceCode" id="cb46"><pre
+class="sourceCode sql"><code class="sourceCode sql"><span id="cb46-1"><a href="#cb46-1" aria-hidden="true" tabindex="-1"></a><span class="co">-- read_only = role</span></span>
+<span id="cb46-2"><a href="#cb46-2" aria-hidden="true" tabindex="-1"></a><span class="co">-- galactus = user</span></span>
+<span id="cb46-3"><a href="#cb46-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb46-4"><a href="#cb46-4" aria-hidden="true" tabindex="-1"></a><span class="kw">GRANT</span> <span class="op">&lt;</span>sql_commands<span class="op">&gt;</span> <span class="kw">ON</span> <span class="op">&lt;</span>sql_objects<span class="op">&gt;</span> <span class="kw">TO</span> <span class="op">&lt;</span>role_name<span class="op">/</span>user_name<span class="op">&gt;</span></span>
+<span id="cb46-5"><a href="#cb46-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb46-6"><a href="#cb46-6" aria-hidden="true" tabindex="-1"></a><span class="co">-- to user</span></span>
+<span id="cb46-7"><a href="#cb46-7" aria-hidden="true" tabindex="-1"></a><span class="kw">GRANT</span> <span class="kw">CONNECT</span> <span class="kw">ON</span> <span class="kw">DATABASE</span> universe <span class="kw">TO</span> galactus ;</span>
+<span id="cb46-8"><a href="#cb46-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb46-9"><a href="#cb46-9" aria-hidden="true" tabindex="-1"></a><span class="co">-- to role</span></span>
+<span id="cb46-10"><a href="#cb46-10" aria-hidden="true" tabindex="-1"></a><span class="kw">GRANT</span> <span class="kw">CONNECT</span> <span class="kw">ON</span> <span class="kw">DATABASE</span> universe <span class="kw">TO</span> read_only ;</span>
+<span id="cb46-11"><a href="#cb46-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb46-12"><a href="#cb46-12" aria-hidden="true" tabindex="-1"></a><span class="co">-- on table</span></span>
+<span id="cb46-13"><a href="#cb46-13" aria-hidden="true" tabindex="-1"></a><span class="kw">GRANT</span> <span class="kw">SELECT</span>,<span class="kw">UPDATE</span> <span class="kw">ON</span> <span class="kw">TABLE</span> galaxy <span class="kw">TO</span> galactus ;</span>
+<span id="cb46-14"><a href="#cb46-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb46-15"><a href="#cb46-15" aria-hidden="true" tabindex="-1"></a><span class="co">-- on column</span></span>
+<span id="cb46-16"><a href="#cb46-16" aria-hidden="true" tabindex="-1"></a><span class="kw">GRANT</span> <span class="kw">SELECT</span>,<span class="kw">UPDATE</span>(galaxy_name,galaxy_type,galaxy_radius) <span class="kw">ON</span> <span class="kw">TABLE</span> galaxy <span class="kw">TO</span> galactus ;</span>
+<span id="cb46-17"><a href="#cb46-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb46-18"><a href="#cb46-18" aria-hidden="true" tabindex="-1"></a><span class="co">-- all tables on schema</span></span>
+<span id="cb46-19"><a href="#cb46-19" aria-hidden="true" tabindex="-1"></a><span class="kw">GRANT</span> <span class="kw">SELECT</span> <span class="kw">ON</span> <span class="kw">ALL</span> <span class="kw">TABLES</span> <span class="kw">IN</span> <span class="kw">SCHEMA</span> <span class="kw">private</span> <span class="kw">TO</span> read_only ;</span>
+<span id="cb46-20"><a href="#cb46-20" aria-hidden="true" tabindex="-1"></a><span class="kw">GRANT</span> <span class="kw">SELECT</span> <span class="kw">ON</span> <span class="kw">ALL</span> <span class="kw">TABLES</span> <span class="kw">IN</span> <span class="kw">SCHEMA</span> <span class="kw">private</span> <span class="kw">TO</span> galactus ;</span>
+<span id="cb46-21"><a href="#cb46-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb46-22"><a href="#cb46-22" aria-hidden="true" tabindex="-1"></a><span class="co">-- role</span></span>
+<span id="cb46-23"><a href="#cb46-23" aria-hidden="true" tabindex="-1"></a><span class="kw">GRANT</span> <span class="op">&lt;</span>role_name<span class="op">&gt;</span> <span class="kw">TO</span> <span class="op">&lt;</span>user_name<span class="op">&gt;</span></span>
+<span id="cb46-24"><a href="#cb46-24" aria-hidden="true" tabindex="-1"></a><span class="kw">GRANT</span> <span class="op">&lt;</span>role_name<span class="op">&gt;</span> <span class="kw">TO</span> <span class="op">&lt;</span>user_name<span class="op">&gt;</span>[,<span class="op">..</span>.]</span>
+<span id="cb46-25"><a href="#cb46-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb46-26"><a href="#cb46-26" aria-hidden="true" tabindex="-1"></a><span class="kw">GRANT</span> read_only <span class="kw">TO</span> galactus ;</span></code></pre></div>
+<h3 id="revoke"><code>REVOKE</code></h3>
+<div class="sourceCode" id="cb47"><pre
+class="sourceCode sql"><code class="sourceCode sql"><span id="cb47-1"><a href="#cb47-1" aria-hidden="true" tabindex="-1"></a><span class="co">-- Show Search path</span></span>
+<span id="cb47-2"><a href="#cb47-2" aria-hidden="true" tabindex="-1"></a>show search_path</span>
+<span id="cb47-3"><a href="#cb47-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb47-4"><a href="#cb47-4" aria-hidden="true" tabindex="-1"></a><span class="co">-- Revoke all</span></span>
+<span id="cb47-5"><a href="#cb47-5" aria-hidden="true" tabindex="-1"></a><span class="kw">revoke</span> <span class="kw">create</span> <span class="kw">on</span> <span class="kw">schema</span> <span class="kw">public</span> <span class="kw">from</span> <span class="kw">public</span></span>
+<span id="cb47-6"><a href="#cb47-6" aria-hidden="true" tabindex="-1"></a><span class="kw">revoke</span> <span class="kw">all</span> <span class="kw">on</span> <span class="kw">database</span> octopus <span class="kw">from</span> <span class="kw">public</span></span></code></pre></div>
+<h3
+id="alter-default-privileges"><code>ALTER DEFAULT PRIVILEGES</code></h3>
+<div class="sourceCode" id="cb48"><pre
+class="sourceCode sql"><code class="sourceCode sql"><span id="cb48-1"><a href="#cb48-1" aria-hidden="true" tabindex="-1"></a><span class="co">-- `IN SCHEMA`</span></span>
+<span id="cb48-2"><a href="#cb48-2" aria-hidden="true" tabindex="-1"></a><span class="co">-- `FOR ROLE`</span></span>
+<span id="cb48-3"><a href="#cb48-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb48-4"><a href="#cb48-4" aria-hidden="true" tabindex="-1"></a><span class="co">-- Grant SELECT privilege to everyone for all tables</span></span>
+<span id="cb48-5"><a href="#cb48-5" aria-hidden="true" tabindex="-1"></a><span class="kw">ALTER</span> <span class="kw">DEFAULT</span> <span class="kw">PRIVILEGES</span> <span class="kw">IN</span> <span class="kw">SCHEMA</span> myschema <span class="kw">GRANT</span> <span class="kw">SELECT</span> <span class="kw">ON</span> <span class="kw">TABLES</span> <span class="kw">TO</span> <span class="kw">PUBLIC</span>;</span>
+<span id="cb48-6"><a href="#cb48-6" aria-hidden="true" tabindex="-1"></a><span class="kw">ALTER</span> <span class="kw">DEFAULT</span> <span class="kw">PRIVILEGES</span> <span class="kw">IN</span> <span class="kw">SCHEMA</span> myschema <span class="kw">GRANT</span> <span class="kw">INSERT</span> <span class="kw">ON</span> <span class="kw">TABLES</span> <span class="kw">TO</span> webuser;</span>
+<span id="cb48-7"><a href="#cb48-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb48-8"><a href="#cb48-8" aria-hidden="true" tabindex="-1"></a><span class="co">-- Revoke the above</span></span>
+<span id="cb48-9"><a href="#cb48-9" aria-hidden="true" tabindex="-1"></a><span class="kw">ALTER</span> <span class="kw">DEFAULT</span> <span class="kw">PRIVILEGES</span> <span class="kw">IN</span> <span class="kw">SCHEMA</span> myschema <span class="kw">REVOKE</span> <span class="kw">SELECT</span> <span class="kw">ON</span> <span class="kw">TABLES</span> <span class="kw">FROM</span> <span class="kw">PUBLIC</span>;</span>
+<span id="cb48-10"><a href="#cb48-10" aria-hidden="true" tabindex="-1"></a><span class="kw">ALTER</span> <span class="kw">DEFAULT</span> <span class="kw">PRIVILEGES</span> <span class="kw">IN</span> <span class="kw">SCHEMA</span> myschema <span class="kw">REVOKE</span> <span class="kw">INSERT</span> <span class="kw">ON</span> <span class="kw">TABLES</span> <span class="kw">FROM</span> webuser;</span>
+<span id="cb48-11"><a href="#cb48-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb48-12"><a href="#cb48-12" aria-hidden="true" tabindex="-1"></a><span class="co">-- Remove the public EXECUTE</span></span>
+<span id="cb48-13"><a href="#cb48-13" aria-hidden="true" tabindex="-1"></a><span class="kw">ALTER</span> <span class="kw">DEFAULT</span> <span class="kw">PRIVILEGES</span> <span class="cf">FOR</span> <span class="kw">ROLE</span> <span class="kw">admin</span> <span class="kw">REVOKE</span> <span class="kw">EXECUTE</span> <span class="kw">ON</span> <span class="kw">FUNCTIONS</span> <span class="kw">FROM</span> <span class="kw">PUBLIC</span>;</span></code></pre></div>
+<h3 id="few-examples">Few Examples</h3>
+<div class="sourceCode" id="cb49"><pre
+class="sourceCode sql"><code class="sourceCode sql"><span id="cb49-1"><a href="#cb49-1" aria-hidden="true" tabindex="-1"></a><span class="co">-- Read only</span></span>
+<span id="cb49-2"><a href="#cb49-2" aria-hidden="true" tabindex="-1"></a><span class="kw">create</span> <span class="kw">role</span> role_read_only;</span>
+<span id="cb49-3"><a href="#cb49-3" aria-hidden="true" tabindex="-1"></a><span class="kw">grant</span> <span class="kw">connect</span> <span class="kw">on</span> <span class="kw">database</span> octopus <span class="kw">to</span> role_read_only;</span>
+<span id="cb49-4"><a href="#cb49-4" aria-hidden="true" tabindex="-1"></a><span class="kw">create</span> <span class="kw">schema</span> new_schema;</span>
+<span id="cb49-5"><a href="#cb49-5" aria-hidden="true" tabindex="-1"></a><span class="kw">grant</span> <span class="kw">usage</span> <span class="kw">on</span> <span class="kw">schema</span> new_schema <span class="kw">to</span> role_read_only;</span>
+<span id="cb49-6"><a href="#cb49-6" aria-hidden="true" tabindex="-1"></a><span class="kw">grant</span> <span class="kw">select</span> <span class="kw">on</span> <span class="kw">all</span> <span class="kw">tables</span> <span class="kw">in</span> <span class="kw">schema</span> new_schema <span class="kw">to</span> role_read_only;</span>
+<span id="cb49-7"><a href="#cb49-7" aria-hidden="true" tabindex="-1"></a><span class="kw">alter</span> <span class="kw">default</span> <span class="kw">privileges</span> <span class="kw">in</span> <span class="kw">schema</span> new_schema <span class="kw">grant</span> <span class="kw">select</span> <span class="kw">on</span> <span class="kw">tables</span> <span class="kw">to</span> role_read_only;</span>
+<span id="cb49-8"><a href="#cb49-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb49-9"><a href="#cb49-9" aria-hidden="true" tabindex="-1"></a><span class="co">-- read/write</span></span>
+<span id="cb49-10"><a href="#cb49-10" aria-hidden="true" tabindex="-1"></a><span class="kw">CREATE</span> <span class="kw">ROLE</span> role_read_write;</span>
+<span id="cb49-11"><a href="#cb49-11" aria-hidden="true" tabindex="-1"></a><span class="kw">GRANT</span> <span class="kw">CONNECT</span> <span class="kw">ON</span> <span class="kw">DATABASE</span> octopus <span class="kw">TO</span> role_read_write;</span>
+<span id="cb49-12"><a href="#cb49-12" aria-hidden="true" tabindex="-1"></a><span class="kw">GRANT</span> <span class="kw">USAGE</span>, <span class="kw">CREATE</span> <span class="kw">ON</span> <span class="kw">SCHEMA</span> new_schema <span class="kw">TO</span> role_read_write;</span>
+<span id="cb49-13"><a href="#cb49-13" aria-hidden="true" tabindex="-1"></a><span class="kw">GRANT</span> <span class="kw">SELECT</span>, <span class="kw">INSERT</span>, <span class="kw">UPDATE</span>, <span class="kw">DELETE</span> <span class="kw">ON</span> <span class="kw">ALL</span> <span class="kw">TABLES</span> <span class="kw">IN</span> <span class="kw">SCHEMA</span> new_schema <span class="kw">TO</span> role_read_write;</span>
+<span id="cb49-14"><a href="#cb49-14" aria-hidden="true" tabindex="-1"></a><span class="kw">ALTER</span> <span class="kw">DEFAULT</span> <span class="kw">PRIVILEGES</span> <span class="kw">IN</span> <span class="kw">SCHEMA</span> new_schema <span class="kw">GRANT</span> <span class="kw">SELECT</span>, <span class="kw">INSERT</span>, <span class="kw">UPDATE</span>, <span class="kw">DELETE</span> <span class="kw">ON</span> <span class="kw">TABLES</span> <span class="kw">TO</span> role_read_write;</span>
+<span id="cb49-15"><a href="#cb49-15" aria-hidden="true" tabindex="-1"></a><span class="kw">GRANT</span> <span class="kw">USAGE</span> <span class="kw">ON</span> <span class="kw">ALL</span> SEQUENCES <span class="kw">IN</span> <span class="kw">SCHEMA</span> new_schema <span class="kw">TO</span> role_read_write;</span>
+<span id="cb49-16"><a href="#cb49-16" aria-hidden="true" tabindex="-1"></a><span class="kw">ALTER</span> <span class="kw">DEFAULT</span> <span class="kw">PRIVILEGES</span> <span class="kw">IN</span> <span class="kw">SCHEMA</span> new_schema <span class="kw">GRANT</span> <span class="kw">USAGE</span> <span class="kw">ON</span> SEQUENCES <span class="kw">TO</span> role_read_write;</span></code></pre></div></div>
+    </main>
+    <footer>
+      <p>
+        Copyright &copy; Today’s Date Your Name
+      </p>
+    </footer>
+  </body>
+</html>
